@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veridien — Modular Surgical Simulation</title>
+  <meta name="description" content="Veridien is building a modular abdominal surgical simulator: swappable organ and pathology modules cast in PVA hydrogel, including modules made from a patient's own MRI or CT." />
+  <meta name="theme-color" content="#101010" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Veridien" />
+  <meta property="og:title" content="Veridien — Rehearse the surgery before you perform it" />
+  <meta property="og:description" content="A modular abdominal simulator: swap in the organs and pathology each procedure needs, or a module built from your patient's own scans." />
+  <meta property="og:url" content="https://veridienlabs.org/" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>
+    document.documentElement.classList.add('js');
+    try {
+      if (sessionStorage.getItem('veridien-intro')) {
+        document.documentElement.classList.add('no-intro');
+      }
+    } catch (e) { document.documentElement.classList.add('no-intro'); }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+  <script src="main.js" defer></script>
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+    } }
+  </script>
+  <script type="module" src="abdomen.js"></script>
+</head>
+<body>
+
+<div class="preloader" aria-hidden="true">
+  <span class="pre-mask"><span class="pre-word">Veridien</span></span>
+  <span class="pre-bar"></span>
+</div>
+
+<nav class="site-nav" aria-label="Primary">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">Veridien</a>
+    <div class="nav-links">
+      <a href="research.html" class="u" style="--delay: 80ms">Research</a>
+      <a href="people.html" class="u" style="--delay: 140ms">People</a>
+      <a href="join.html" class="u" style="--delay: 200ms">Join</a>
+      <a href="clinicians.html" class="u" style="--delay: 260ms">For clinicians</a>
+      <a href="mailto:contact@veridienlabs.org" class="btn-nav" style="--delay: 320ms">Contact</a>
+    </div>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" style="--delay: 200ms"><span class="menu-label">Menu</span></button>
+  </div>
+</nav>
+
+<div class="menu" id="site-menu">
+  <div class="wrap">
+    <nav class="menu-links" aria-label="Menu">
+      <a href="index.html" class="menu-link" aria-current="page" style="--i: 0"><span class="m"><span class="p">Home</span></span></a>
+      <a href="research.html" class="menu-link" style="--i: 1"><span class="m"><span class="p">Research</span></span></a>
+      <a href="people.html" class="menu-link" style="--i: 2"><span class="m"><span class="p">People</span></span></a>
+      <a href="join.html" class="menu-link" style="--i: 3"><span class="m"><span class="p">Join</span></span></a>
+      <a href="clinicians.html" class="menu-link" style="--i: 4"><span class="m"><span class="p">For clinicians</span></span></a>
+    </nav>
+    <a href="mailto:contact@veridienlabs.org" class="menu-meta">contact@veridienlabs.org</a>
+  </div>
+</div>
+
+<main>
+  <section class="sim-hero" data-hold aria-label="Introduction">
+    <div class="sim-sticky">
+      <div class="sim-stage" aria-hidden="true">
+        <div class="halo"></div>
+        <img class="sim-poster" src="assets/abdomen-poster.webp" width="1016" height="912" alt="" />
+        <div class="sim-labels"></div>
+      </div>
+      <div class="sim-overlay">
+        <div class="wrap sim-grid">
+          <div class="sim-intro">
+            <h1 class="display hero-title" aria-label="Rehearse the surgery before you perform it.">
+              <span class="hl hl--static" aria-hidden="true"><span class="m"><span class="p">Rehearse the</span></span></span>
+              <span class="hl" aria-hidden="true"><span class="cycler-slot"><span class="cw"><span class="m"><span class="p" data-from="bottom">inci</span></span><span class="m"><span class="p" data-from="right">sion</span></span></span><span class="cw"><span class="m"><span class="p" data-from="left">su</span></span><span class="m"><span class="p" data-from="bottom">ture</span></span></span><span class="cw"><span class="m"><span class="p" data-from="bottom">ana</span></span><span class="m"><span class="p" data-from="right">tomy</span></span></span><span class="cw is-final"><span class="m"><span class="p" data-from="left">sur</span></span><span class="m"><span class="p" data-from="bottom">gery</span></span></span></span> <span class="hl--static"><span class="m"><span class="p" style="--delay: 120ms">before</span></span></span></span>
+              <span class="hl hl--static" aria-hidden="true"><span class="m"><span class="p" style="--delay: 220ms">you perform it.</span></span></span>
+            </h1>
+            <div class="hero-sub">
+              <p class="lead" data-reveal="lines" style="--delay: 600ms">Veridien is building a modular abdominal simulator: swap in the organs and pathology each procedure calls for, cast in PVA hydrogel tuned to handle like real tissue.</p>
+              <a class="btn" href="mailto:contact@veridienlabs.org" data-reveal="up" style="--delay: 950ms">Get in touch</a>
+            </div>
+          </div>
+          <div class="sim-caps">
+            <div class="sim-cap" data-step="1">
+              <h2 class="display-sm" data-reveal="lines" data-manual>One simulator, built from modules.</h2>
+              <p class="lead" data-reveal="lines" data-manual style="--delay: 150ms">We're building a reusable base and laparoscopic cover, with organ modules that dock in underneath.</p>
+            </div>
+            <div class="sim-cap" data-step="2">
+              <h2 class="display-sm" data-reveal="lines" data-manual>Swap in the organs each procedure needs.</h2>
+              <p class="lead" data-reveal="lines" data-manual style="--delay: 150ms">Liver and gallbladder, upper GI, bowel, pelvis: each module lifts out and drops back in.</p>
+            </div>
+            <div class="sim-cap" data-step="3">
+              <h2 class="display-sm" data-reveal="lines" data-manual>Change the pathology, not the simulator.</h2>
+              <p class="lead" data-reveal="lines" data-manual style="--delay: 150ms">Trade a healthy uterus for one with fibroids, and the same base becomes a myomectomy trainer.</p>
+            </div>
+            <div class="sim-cap" data-step="4">
+              <h2 class="display-sm" data-reveal="lines" data-manual>Or build a module from your patient's own scans.</h2>
+              <p class="lead" data-reveal="lines" data-manual style="--delay: 150ms">Segmented from the patient's MRI or CT and cast in PVA hydrogel, so you rehearse on their anatomy.</p>
+            </div>
+          </div>
+          <p class="sim-hint" aria-hidden="true"><span class="sim-hint-line"></span>Scroll</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <h2 class="display-sm axis-a" data-reveal="lines">One simulator.<br />Every procedure.</h2>
+      <p class="lead axis-b" data-reveal="lines" style="--delay: 200ms">Most trainers are built for one task and one anatomy, then used for everyone. We're designing a single base that takes different organ modules, pathology variants, and, when a case calls for it, a module made from the patient's own MRI or CT, so one simulator can follow training from procedure to procedure.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap grid">
+      <h2 class="display-sm axis-a" data-reveal="lines">From the case to the rehearsal, on one base.</h2>
+      <ol class="steps axis-a">
+        <li style="--delay: 0ms">
+          <h3 class="caps" data-reveal="lines">Choose</h3>
+          <span class="step-rule" data-reveal="rule"></span>
+          <p data-reveal="lines" style="--delay: 150ms">Pick the organ modules a procedure involves: hepatobiliary, upper GI, bowel, or pelvic.</p>
+        </li>
+        <li style="--delay: 140ms">
+          <h3 class="caps" data-reveal="lines">Customize</h3>
+          <span class="step-rule" data-reveal="rule"></span>
+          <p data-reveal="lines" style="--delay: 290ms">Swap in a pathology variant, or a module segmented from the patient's own scans, all in PVA (polyvinyl alcohol) hydrogel tuned to handle like real tissue.</p>
+        </li>
+        <li style="--delay: 280ms">
+          <h3 class="caps" data-reveal="lines">Rehearse</h3>
+          <span class="step-rule" data-reveal="rule"></span>
+          <p data-reveal="lines" style="--delay: 430ms">Dock the modules into the base under the laparoscopic cover, then cut, suture, and navigate before ever touching the patient.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--last" aria-label="Status">
+    <div class="wrap grid">
+      <h2 class="display-sm axis-a" data-reveal="lines">In active development.</h2>
+      <div class="axis-b">
+        <p class="lead prose" data-reveal="up" style="--delay: 250ms">Reach out at <a href="mailto:contact@veridienlabs.org">contact@veridienlabs.org</a> to stay updated.</p>
+        <a class="btn status-cta" href="clinicians.html" data-reveal="up" style="--delay: 400ms">For clinicians</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner" data-reveal="up">
+      <span>Veridien &copy; 2026</span>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="research.html" class="u">Research</a>
+        <a href="people.html" class="u">People</a>
+        <a href="join.html" class="u">Join</a>
+        <a href="clinicians.html" class="u">For clinicians</a>
+        <a href="mailto:contact@veridienlabs.org" class="u">contact@veridienlabs.org</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

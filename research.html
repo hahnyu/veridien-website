@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Research — Veridien</title>
+  <meta name="description" content="Veridien's research: the imaging-to-phantom pipeline behind our simulator modules, active projects in PVA hydrogel surgical phantoms, outputs, and collaborators." />
+  <meta name="theme-color" content="#101010" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Veridien" />
+  <meta property="og:title" content="Research — Veridien" />
+  <meta property="og:description" content="The imaging-to-phantom pipeline behind our simulator modules, active projects in PVA hydrogel surgical phantoms, outputs, and collaborators." />
+  <meta property="og:url" content="https://veridienlabs.org/research.html" />
+  <meta name="twitter:card" content="summary" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script>document.documentElement.classList.add('js', 'no-intro');</script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Primary">
+  <div class="wrap">
+    <a href="index.html" class="wordmark">Veridien</a>
+    <div class="nav-links">
+      <a href="research.html" class="u" aria-current="page" style="--delay: 80ms">Research</a>
+      <a href="people.html" class="u" style="--delay: 140ms">People</a>
+      <a href="join.html" class="u" style="--delay: 200ms">Join</a>
+      <a href="clinicians.html" class="u" style="--delay: 260ms">For clinicians</a>
+      <a href="mailto:contact@veridienlabs.org" class="btn-nav" style="--delay: 320ms">Contact</a>
+    </div>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu" style="--delay: 200ms"><span class="menu-label">Menu</span></button>
+  </div>
+</nav>
+
+<div class="menu" id="site-menu">
+  <div class="wrap">
+    <nav class="menu-links" aria-label="Menu">
+      <a href="index.html" class="menu-link" style="--i: 0"><span class="m"><span class="p">Home</span></span></a>
+      <a href="research.html" class="menu-link" aria-current="page" style="--i: 1"><span class="m"><span class="p">Research</span></span></a>
+      <a href="people.html" class="menu-link" style="--i: 2"><span class="m"><span class="p">People</span></span></a>
+      <a href="join.html" class="menu-link" style="--i: 3"><span class="m"><span class="p">Join</span></span></a>
+      <a href="clinicians.html" class="menu-link" style="--i: 4"><span class="m"><span class="p">For clinicians</span></span></a>
+    </nav>
+    <a href="mailto:contact@veridienlabs.org" class="menu-meta">contact@veridienlabs.org</a>
+  </div>
+</div>
+
+<main>
+  <header class="page-hero page-hero--compact">
+    <div class="wrap grid">
+      <h1 class="display axis-a" data-reveal="lines" style="--delay: 150ms">Research</h1>
+      <p class="lead axis-b" data-reveal="lines" style="--delay: 450ms">Founded by Cornell University students, building on research conducted at Cornell.</p>
+      <nav class="page-index axis-b" aria-label="On this page" data-reveal="up" style="--delay: 700ms">
+        <a href="#projects">Projects</a>
+        <a href="#outputs">Outputs</a>
+        <a href="#partners">Partners</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="section section--tight" id="platform" aria-labelledby="platform-h">
+    <div class="wrap grid">
+      <p class="eyebrow axis-a" data-reveal="lines">Platform</p>
+      <h2 class="title axis-a" id="platform-h" data-reveal="lines">One imaging-to-phantom pipeline behind every module.</h2>
+      <ol class="pipe-strip axis-a" data-reveal="group">
+        <li class="strip-step">
+          <svg class="pipe-icon" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw" style="--delay: 0ms">
+            <path class="d" pathLength="1" style="--di: 0" d="M60 22 L100 42 L60 62 L20 42 Z" />
+            <path class="d" pathLength="1" style="--di: 1" d="M20 58 L60 78 L100 58" />
+            <path class="d" pathLength="1" style="--di: 2" d="M20 74 L60 94 L100 74" />
+            <path class="d" pathLength="1" style="--di: 3" d="M48 38 C48 30 72 30 72 38 C72 46 64 52 60 54 C56 52 48 46 48 38 Z" />
+            <circle class="accent-fill" cx="65" cy="37" r="3" />
+          </svg>
+          <span class="strip-text"><span class="strip-label">01 Segment</span><span class="meta">Patient MRI or CT, in 3D Slicer</span></span>
+        </li>
+        <li class="strip-step">
+          <svg class="pipe-icon" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw" style="--delay: 120ms">
+            <path class="d" pathLength="1" style="--di: 0" d="M24 28 H96 V52 H24 Z" />
+            <path class="d" pathLength="1" style="--di: 1" d="M42 52 C42 38 78 38 78 52" />
+            <path class="d" pathLength="1" style="--di: 2" d="M24 68 H96 V92 H24 Z" />
+            <path class="d" pathLength="1" style="--di: 3" d="M42 68 C42 80 54 88 60 90 C66 88 78 80 78 68" />
+          </svg>
+          <span class="strip-text"><span class="strip-label">02 Mold</span><span class="meta">A printed mold for each structure</span></span>
+        </li>
+        <li class="strip-step">
+          <svg class="pipe-icon" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw" style="--delay: 240ms">
+            <path class="d" pathLength="1" style="--di: 0" d="M60 10 V32" />
+            <path class="d" pathLength="1" style="--di: 1" d="M60 38 C56 43 56 47 60 48 C64 47 64 43 60 38 Z" />
+            <path class="d" pathLength="1" style="--di: 2" d="M36 62 C34 50 86 48 86 62 C86 78 72 92 64 102 C60 106 56 104 54 100 C46 88 38 76 36 62 Z" />
+            <path class="d accent" pathLength="1" style="--di: 3" d="M40 78 C54 83 70 83 82 76" />
+          </svg>
+          <span class="strip-text"><span class="strip-label">03 Cast</span><span class="meta">PVA hydrogel, in each mold</span></span>
+        </li>
+        <li class="strip-step">
+          <svg class="pipe-icon" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw" style="--delay: 360ms">
+            <path class="d" pathLength="1" style="--di: 0" d="M14 96 H106" />
+            <path class="d" pathLength="1" style="--di: 1" d="M14 62 C22 38 30 38 38 62 S54 86 62 62 S78 38 86 62 S100 82 106 70" />
+            <path class="d" pathLength="1" style="--di: 2" d="M38 91 V101 M62 91 V101 M86 91 V101" />
+            <circle class="accent-fill" cx="86" cy="62" r="3" />
+          </svg>
+          <span class="strip-text"><span class="strip-label">04 Tune</span><span class="meta">Stiffness benchmarked to real tissue</span></span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="projects" aria-labelledby="projects-h">
+    <div class="wrap grid">
+      <p class="eyebrow axis-a" data-reveal="lines">Projects</p>
+      <h2 class="display-sm axis-a" id="projects-h" data-reveal="lines">From one organ to the whole procedure.</h2>
+      <ul class="work-grid axis-a">
+        <li data-reveal="up" style="--delay: 0ms">
+          <button class="work-card" type="button" data-work="uterine-platform" aria-haspopup="dialog" aria-controls="work-uterine-platform">
+            <span class="work-thumb">
+              <svg class="work-art" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw">
+                <path class="d" pathLength="1" style="--di: 0" d="M46 46 C46 36 74 36 74 46 C74 62 67 74 60 80 C53 74 46 62 46 46 Z" />
+                <path class="d" pathLength="1" style="--di: 1" d="M46 44 C38 36 28 36 22 44 C20 48 22 52 26 52" />
+                <path class="d" pathLength="1" style="--di: 1" d="M74 44 C82 36 92 36 98 44 C100 48 98 52 94 52" />
+                <path class="d" pathLength="1" style="--di: 2" d="M56 79 V90 M64 79 V90" />
+                <path class="d" pathLength="1" style="--di: 3" d="M20 98 L60 106 L100 98" />
+                <path class="d accent" pathLength="1" style="--di: 4" d="M50 58 H70" />
+                <circle class="accent-fill" cx="26" cy="52" r="3" />
+              </svg>
+            </span>
+            <span class="work-status">Protocol established</span>
+            <span class="work-title">Patient-specific uterine phantom platform</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 90ms">
+          <button class="work-card" type="button" data-work="myomectomy" aria-haspopup="dialog" aria-controls="work-myomectomy">
+            <span class="work-thumb work-thumb--photo">
+              <img src="assets/myomectomy-phantom.webp" width="1426" height="1830" loading="lazy" style="object-position: 50% 58%" alt="" />
+            </span>
+            <span class="work-status">Prototype</span>
+            <span class="work-title">Myomectomy trainer</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 180ms">
+          <button class="work-card" type="button" data-work="prostate-biopsy" aria-haspopup="dialog" aria-controls="work-prostate-biopsy">
+            <span class="work-thumb work-thumb--photo">
+              <img src="assets/prostate-segmentation.webp" width="1426" height="1076" loading="lazy" alt="" />
+            </span>
+            <span class="work-status">Prototype in progress</span>
+            <span class="work-title">MRI-guided prostate biopsy phantom</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 270ms">
+          <button class="work-card" type="button" data-work="suture-retention" aria-haspopup="dialog" aria-controls="work-suture-retention">
+            <span class="work-thumb">
+              <svg class="work-art" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw">
+                <path class="d" pathLength="1" style="--di: 0" d="M12 44 H56 V84 H12" />
+                <path class="d" pathLength="1" style="--di: 0" d="M108 44 H64 V84 H108" />
+                <path class="d accent" pathLength="1" style="--di: 1" d="M40 64 C40 40 80 40 80 64 C80 88 40 88 40 64" />
+                <path class="d" pathLength="1" style="--di: 2" d="M12 64 H2 M6 60 L2 64 L6 68 M108 64 H118 M114 60 L118 64 L114 68" />
+                <path class="d" pathLength="1" style="--di: 3" d="M30 102 L36 96 L42 108 L48 96 L54 108 L60 96 L66 108 L72 96 L78 108 L84 96 L90 102" />
+              </svg>
+            </span>
+            <span class="work-status">Submitted to SAGES 2027</span>
+            <span class="work-title">Suture retention and stiffness</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 0ms">
+          <button class="work-card" type="button" data-work="hysterectomy" aria-haspopup="dialog" aria-controls="work-hysterectomy">
+            <span class="work-thumb">
+              <svg class="work-art" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw">
+                <path class="d" pathLength="1" style="--di: 0" d="M14 86 L60 100 L106 86 L60 72 Z" />
+                <path class="d" pathLength="1" style="--di: 1" d="M14 86 V92 L60 106 L106 92 V86" />
+                <path class="d" pathLength="1" style="--di: 2" d="M48 34 C48 26 72 26 72 34 C72 46 66 56 60 60 C54 56 48 46 48 34 Z" />
+                <path class="d" pathLength="1" style="--di: 3" d="M48 32 C42 26 34 26 30 32 M72 32 C78 26 86 26 90 32" />
+                <path class="d accent" pathLength="1" style="--di: 4" d="M60 64 V80" />
+                <circle class="accent-fill" cx="60" cy="86" r="3" />
+              </svg>
+            </span>
+            <span class="work-status">Presented at NEBEC</span>
+            <span class="work-title">Modular hysterectomy simulator</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 90ms">
+          <button class="work-card" type="button" data-work="adipose" aria-haspopup="dialog" aria-controls="work-adipose">
+            <span class="work-thumb">
+              <svg class="work-art" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw">
+                <path class="d" pathLength="1" style="--di: 0" d="M26 48 a14 14 0 1 0 28 0 a14 14 0 1 0 -28 0" />
+                <path class="d" pathLength="1" style="--di: 1" d="M58 42 a12 12 0 1 0 24 0 a12 12 0 1 0 -24 0" />
+                <path class="d" pathLength="1" style="--di: 2" d="M41 74 a15 15 0 1 0 30 0 a15 15 0 1 0 -30 0" />
+                <path class="d" pathLength="1" style="--di: 3" d="M75 70 a13 13 0 1 0 26 0 a13 13 0 1 0 -26 0" />
+                <path class="d" pathLength="1" style="--di: 4" d="M20 84 a10 10 0 1 0 20 0 a10 10 0 1 0 -20 0" />
+                <path class="d accent" pathLength="1" style="--di: 5" d="M14 104 C40 96 80 110 106 100" />
+              </svg>
+            </span>
+            <span class="work-status">Study design</span>
+            <span class="work-title">Synthetic adipose tissue</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 180ms">
+          <button class="work-card" type="button" data-work="skill-assessment" aria-haspopup="dialog" aria-controls="work-skill-assessment">
+            <span class="work-thumb work-thumb--figure">
+              <img src="assets/skill-protocol-gap.png" width="1440" height="750" loading="lazy" alt="" />
+            </span>
+            <span class="work-status">Manuscript submitted to IJCARS</span>
+            <span class="work-title">AI surgical skill assessment</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+        <li data-reveal="up" style="--delay: 270ms">
+          <button class="work-card" type="button" data-work="menotwin" aria-haspopup="dialog" aria-controls="work-menotwin">
+            <span class="work-thumb">
+              <svg class="work-art" viewBox="0 0 120 120" aria-hidden="true" data-reveal="draw">
+                <path class="d" pathLength="1" style="--di: 0" d="M40 14 H80 C83 14 84 15 84 18 V102 C84 105 83 106 80 106 H40 C37 106 36 105 36 102 V18 C36 15 37 14 40 14 Z" />
+                <path class="d" pathLength="1" style="--di: 1" d="M54 22 H66" />
+                <path class="d accent" pathLength="1" style="--di: 2" d="M42 62 H52 L56 50 L62 76 L67 56 L70 62 H78" />
+                <path class="d" pathLength="1" style="--di: 3" d="M46 88 H74 M50 96 H70" />
+              </svg>
+            </span>
+            <span class="work-status">Education and outreach</span>
+            <span class="work-title">MenoTwin summer program</span>
+            <span class="work-plus" aria-hidden="true"></span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Project details: each moves into the panel when its card is opened -->
+      <div class="work-details" hidden>
+        <article class="work-detail" id="work-uterine-platform" aria-labelledby="wd-uterine-platform">
+          <div class="work-media work-media--art" data-art="uterine-platform"></div>
+          <div class="work-text">
+            <p class="eyebrow">Protocol established</p>
+            <h3 class="work-detail-title" id="wd-uterine-platform">Patient-specific uterine phantom platform</h3>
+            <p>A platform for fabricating uterine phantoms from patient imaging: an imaging-compatible PVA formulation, mechanical benchmarking against published uterine tissue values, and surgeon feedback on realism. The procedure-specific trainers build on it.</p>
+            <p class="project-meta">Manuscript in preparation</p>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-myomectomy" aria-labelledby="wd-myomectomy">
+          <figure class="work-media photo">
+            <img src="assets/myomectomy-phantom.webp" width="1426" height="1830" loading="lazy" style="object-position: 50% 58%" alt="Gloved hands removing a fibroid from a red PVA hydrogel uterine phantom with an electrosurgical pen" />
+            <figcaption>Fibroid removal on a PVA hydrogel phantom</figcaption>
+          </figure>
+          <div class="work-text">
+            <p class="eyebrow">Prototype</p>
+            <h3 class="work-detail-title" id="wd-myomectomy">Myomectomy trainer</h3>
+            <p>Adds a fibroid of different stiffness to the uterine platform, with a defined, gradable task: fibroid enucleation, hemostasis, and multi-layer closure. A validation study comparing novice and expert performance is planned.</p>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-prostate-biopsy" aria-labelledby="wd-prostate-biopsy">
+          <figure class="work-media photo">
+            <img src="assets/prostate-segmentation.webp" width="1426" height="1076" loading="lazy" alt="3D Slicer rendering of segmented pelvic structures, including the bladder, prostate, rectum, muscle and bone" />
+            <figcaption>Pelvic anatomy segmented from patient MRI in 3D Slicer</figcaption>
+          </figure>
+          <div class="work-text">
+            <p class="eyebrow">Prototype in progress</p>
+            <h3 class="work-detail-title" id="wd-prostate-biopsy">MRI-guided prostate biopsy phantom</h3>
+            <p>An anatomically complete, MRI-compatible pelvic phantom, segmented from patient MRI, for studying needle deflection during MRI-guided prostate biopsy.</p>
+            <p class="project-meta">With the Department of Radiology, Brigham and Women's Hospital and Harvard Medical School</p>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-suture-retention" aria-labelledby="wd-suture-retention">
+          <div class="work-media work-media--art" data-art="suture-retention"></div>
+          <div class="work-text">
+            <p class="eyebrow">Submitted to SAGES 2027</p>
+            <h3 class="work-detail-title" id="wd-suture-retention">Suture retention and stiffness</h3>
+            <p>Phantom materials are usually matched to tissue stiffness but rarely tested for whether they hold a suture. This study treats suture retention and stiffness as separate design variables in a PVA/PAM hydrogel.</p>
+            <div class="work-output">
+              <p class="eyebrow">Under review</p>
+              <p class="work-output-title">Decoupling Suture Retention from Stiffness in Hydrogel Surgical Training Phantoms</p>
+              <p class="meta">Abstract, SAGES 2027 Annual Meeting, Education/Simulation</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-hysterectomy" aria-labelledby="wd-hysterectomy">
+          <div class="work-media work-media--art" data-art="hysterectomy"></div>
+          <div class="work-text">
+            <p class="eyebrow">Presented at NEBEC</p>
+            <h3 class="work-detail-title" id="wd-hysterectomy">Modular hysterectomy simulator</h3>
+            <p>A modular PVA hydrogel simulator for total laparoscopic hysterectomy training, with stiffness tuned through polymer concentration and freeze–thaw cycles and benchmarked against published uterine tissue values.</p>
+            <div class="work-output">
+              <p class="eyebrow">Presented</p>
+              <p class="work-output-title">Development of a Modular, High-Fidelity Physical Simulator for Laparoscopic Hysterectomy Training</p>
+              <p class="meta">Poster, Northeast Bioengineering Conference (NEBEC)</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-adipose" aria-labelledby="wd-adipose">
+          <div class="work-media work-media--art" data-art="adipose"></div>
+          <div class="work-text">
+            <p class="eyebrow">Study design</p>
+            <h3 class="work-detail-title" id="wd-adipose">Synthetic adipose tissue</h3>
+            <p>A tunable PVA-based surrogate for fat, a tissue most simulators only roughly approximate, aimed at matching how real fat handles and cuts.</p>
+          </div>
+        </article>
+
+        <article class="work-detail work-detail--wide" id="work-skill-assessment" aria-labelledby="wd-skill-assessment">
+          <figure class="work-media chart">
+            <img src="assets/skill-protocol-gap.png" width="1440" height="750" loading="lazy" alt="Bar charts from the manuscript. Left: skill-classification accuracy is high when a surgeon's own trials are in training and drops when the surgeon is held out. Right: the same kinematic features identify the surgeon with high accuracy." />
+            <figcaption>From the submitted manuscript: skill-classification accuracy under the two JIGSAWS validation protocols (a), and how accurately the same kinematic features identify the surgeon (b).</figcaption>
+          </figure>
+          <div class="work-text">
+            <p class="eyebrow">Manuscript submitted to IJCARS</p>
+            <h3 class="work-detail-title" id="wd-skill-assessment">AI surgical skill assessment</h3>
+            <p>What does an automated skill model actually learn? Using robot kinematics from the public JIGSAWS dataset, we compare skill models when a surgeon's own trials appear in training against when that surgeon is held out entirely, and test whether a model's confidence can flag which trials to hand back to a human rater.</p>
+            <div class="work-output">
+              <p class="eyebrow">Under review</p>
+              <p class="work-output-title">What does a surgical skill model measure? Quantifying identity confounding and miscalibration on JIGSAWS</p>
+              <p class="meta">Manuscript, International Journal of Computer Assisted Radiology and Surgery (IJCARS)</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="work-detail" id="work-menotwin" aria-labelledby="wd-menotwin">
+          <div class="work-media work-media--art" data-art="menotwin"></div>
+          <div class="work-text">
+            <p class="eyebrow">Education and outreach</p>
+            <h3 class="work-detail-title" id="wd-menotwin">MenoTwin summer program</h3>
+            <p>With Dr. Suélia Rosa, our team helped run a summer biomedical engineering program for about 20 Ithaca-area high school students, built around technology for menopause health. The program produced MenoTwin, a health-monitoring web app.</p>
+            <div class="work-output">
+              <p class="eyebrow">Under review</p>
+              <p class="work-output-title">MenoTwin: A Pre-College Biomedical Engineering Program Focused on Women’s Health</p>
+              <p class="meta">Full paper, EDUNINE 2027, IEEE World Engineering Education Conference</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="outputs" aria-labelledby="outputs-h">
+    <div class="wrap grid">
+      <p class="eyebrow axis-a" data-reveal="lines">Outputs</p>
+      <h2 class="title axis-a" id="outputs-h" data-reveal="lines">Presented and under review.</h2>
+      <div class="out-groups axis-a">
+        <div class="out-group" data-reveal="up">
+          <h3 class="out-status">Under review</h3>
+          <ul class="out-list">
+            <li>
+              <p class="out-title">What does a surgical skill model measure? Quantifying identity confounding and miscalibration on JIGSAWS</p>
+              <p class="meta">Manuscript, International Journal of Computer Assisted Radiology and Surgery (IJCARS)</p>
+            </li>
+            <li>
+              <p class="out-title">Decoupling Suture Retention from Stiffness in Hydrogel Surgical Training Phantoms</p>
+              <p class="meta">Abstract, SAGES 2027 Annual Meeting, Education/Simulation</p>
+            </li>
+            <li>
+              <p class="out-title">MenoTwin: A Pre-College Biomedical Engineering Program Focused on Women’s Health</p>
+              <p class="meta">Full paper, EDUNINE 2027, IEEE World Engineering Education Conference</p>
+            </li>
+          </ul>
+        </div>
+        <div class="out-group" data-reveal="up" style="--delay: 120ms">
+          <h3 class="out-status">Presented</h3>
+          <ul class="out-list">
+            <li>
+              <p class="out-title">Development of a Modular, High-Fidelity Physical Simulator for Laparoscopic Hysterectomy Training</p>
+              <p class="meta">Poster, Northeast Bioengineering Conference (NEBEC)</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight section--last" id="partners" aria-labelledby="partners-h">
+    <div class="wrap grid">
+      <p class="eyebrow axis-a" data-reveal="lines">Partners</p>
+      <h2 class="title axis-a" id="partners-h" data-reveal="lines">Built with clinical and engineering partners.</h2>
+      <ul class="partner-row axis-a">
+        <li data-reveal="up">
+          <span class="out-title">Cornell University</span>
+          <span class="meta">Meinig School of Biomedical Engineering</span>
+        </li>
+        <li data-reveal="up" style="--delay: 90ms">
+          <span class="out-title">Harvard Medical School and Brigham and Women's Hospital</span>
+          <span class="meta">Department of Radiology</span>
+        </li>
+        <li data-reveal="up" style="--delay: 180ms">
+          <span class="out-title">University at Buffalo Jacobs School of Medicine</span>
+          <span class="meta">Clinical validation</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<dialog class="work-dialog">
+  <div class="work-panel" data-lenis-prevent>
+    <button class="work-close" type="button" aria-label="Close"><span aria-hidden="true"></span></button>
+    <div class="work-body"></div>
+  </div>
+</dialog>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner" data-reveal="up">
+      <span>Veridien &copy; 2026</span>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="research.html" class="u">Research</a>
+        <a href="people.html" class="u">People</a>
+        <a href="join.html" class="u">Join</a>
+        <a href="clinicians.html" class="u">For clinicians</a>
+        <a href="mailto:contact@veridienlabs.org" class="u">contact@veridienlabs.org</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
