@@ -14,6 +14,9 @@
   let lenis = null;
   if (!reduce && typeof window.Lenis === 'function') {
     lenis = new window.Lenis({ lerp: 0.09, anchors: { offset: -96 } });
+    window.veridienLenis = lenis; // the Home hero steps through its captions with it
+    // Lenis turns smoothing off under the OS Reduce Motion setting; the site doesn't honor it (see `reduce`)
+    if (!reduce) Object.defineProperty(lenis, 'prefersReducedMotion', { get: () => false });
     const loop = (t) => { lenis.raf(t); requestAnimationFrame(loop); };
     requestAnimationFrame(loop);
   }

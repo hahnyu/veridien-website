@@ -17,11 +17,53 @@ function start() {
   const reduce = false;
   const coarse = matchMedia('(pointer: coarse)').matches;
 
+  /* Scroll progress through the pinned section (0..1), unsmoothed */
+  const progressNow = () => {
+    const rect = hero.getBoundingClientRect();
+    const span = rect.height - innerHeight;
+    return span > 0 ? Math.min(Math.max(-rect.top / span, 0), 1) : 0;
+  };
+
+  /* Captions and headline */
+  const intro = hero.querySelector('.sim-intro');
+  const hint = hero.querySelector('.sim-hint');
+  const caps = [...hero.querySelectorAll('.sim-cap')];
+  let step = -1;
+  const setStep = (next) => {
+    if (reduce || next === step) return;
+    step = next;
+    intro.classList.toggle('is-hidden', step > 0);
+    if (hint) hint.classList.toggle('is-hidden', step > 0);
+    caps.forEach((c) => {
+      const on = +c.dataset.step === step;
+      c.classList.toggle('is-active', on);
+      c.querySelectorAll('[data-reveal]').forEach((el) => el.classList.toggle('is-in', on));
+    });
+  };
+  // Reduce Motion: captions are a plain list, each fading in as it scrolls into view
+  if (reduce) {
+    const show = (c) => c.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in'));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => entries.forEach((e) => {
+        if (e.isIntersecting) { show(e.target); io.unobserve(e.target); }
+      }), { rootMargin: '0px 0px -12% 0px' });
+      caps.forEach((c) => io.observe(c));
+    } else caps.forEach(show);
+  }
+
+  const stepFor = (prog) => (reduce ? 0 : prog < 0.07 ? 0 : prog < 0.33 ? 1 : prog < 0.56 ? 2 : prog < 0.76 ? 3 : 4);
+
+  if (!reduce) stepThroughCaptions(progressNow);
+
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
   } catch (err) {
-    return; // No WebGL: the poster image stays
+    // No WebGL: the poster image stays, and the captions follow scroll on their own
+    const follow = () => setStep(stepFor(progressNow()));
+    addEventListener('scroll', follow, { passive: true });
+    follow();
+    return;
   }
 
   const quality = coarse || innerWidth < 720 ? 'low' : 'high';
@@ -69,41 +111,10 @@ function start() {
   /* Scroll progress through the pinned section */
   let p = 0;
   const target = { p: 0 };
-  const readProgress = () => {
-    const rect = hero.getBoundingClientRect();
-    const span = rect.height - innerHeight;
-    target.p = span > 0 ? Math.min(Math.max(-rect.top / span, 0), 1) : 0;
-  };
+  const readProgress = () => { target.p = progressNow(); };
 
   const ramp = (v, a, b) => Math.min(Math.max((v - a) / (b - a), 0), 1);
   const ease = (t) => t * t * (3 - 2 * t);
-
-  /* Captions and headline */
-  const intro = hero.querySelector('.sim-intro');
-  const hint = hero.querySelector('.sim-hint');
-  const caps = [...hero.querySelectorAll('.sim-cap')];
-  let step = -1;
-  const setStep = (next) => {
-    if (reduce || next === step) return;
-    step = next;
-    intro.classList.toggle('is-hidden', step > 0);
-    if (hint) hint.classList.toggle('is-hidden', step > 0);
-    caps.forEach((c) => {
-      const on = +c.dataset.step === step;
-      c.classList.toggle('is-active', on);
-      c.querySelectorAll('[data-reveal]').forEach((el) => el.classList.toggle('is-in', on));
-    });
-  };
-  // Reduce Motion: captions are a plain list, each fading in as it scrolls into view
-  if (reduce) {
-    const show = (c) => c.querySelectorAll('[data-reveal]').forEach((el) => el.classList.add('is-in'));
-    if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver((entries) => entries.forEach((e) => {
-        if (e.isIntersecting) { show(e.target); io.unobserve(e.target); }
-      }), { rootMargin: '0px 0px -12% 0px' });
-      caps.forEach((c) => io.observe(c));
-    } else caps.forEach(show);
-  }
 
   /* Camera rig */
   const baseTarget = new THREE.Vector3(0, 1.1, 0.7);
@@ -122,7 +133,6 @@ function start() {
     const labels = ramp(prog, 0.34, 0.39) * (1 - ramp(prog, 0.54, 0.58));
     return { explode, swap, scan, focus, labels, spin: 0.2 + prog * 0.55 };
   };
-  const stepFor = (prog) => (reduce ? 0 : prog < 0.07 ? 0 : prog < 0.33 ? 1 : prog < 0.56 ? 2 : prog < 0.76 ? 3 : 4);
 
   /* Adaptive quality: drop pixel ratio if frames run slow */
   let frameCount = 0, slowFrames = 0, lastNow = 0;
@@ -218,4 +228,129 @@ function start() {
     new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(hero);
   }
   requestAnimationFrame(loop);
+}
+
+/* One gesture = one caption. While the hero is pinned, a wheel or trackpad gesture, a swipe,
+   or an arrow/space/page key glides to the next (or previous) caption's resting point, so a
+   fast flick can't skip text. Momentum left over from a gesture is swallowed until a new one
+   starts. Above the first caption and below the last, scrolling is free. */
+const RESTS = [0, 0.2, 0.45, 0.72, 0.94]; // scroll progress where each caption sits
+
+function stepThroughCaptions(progressNow) {
+  const lenis = window.veridienLenis;
+  if (!lenis) return;
+  const EPS = 0.004;
+  const pinned = () => {
+    const r = hero.getBoundingClientRect();
+    return r.top <= 1 && r.bottom >= innerHeight - 1;
+  };
+  // Resting point a move in this direction goes to, or null when scrolling should stay free
+  const targetFor = (dir) => {
+    if (!pinned()) return null;
+    const p = progressNow();
+    if (dir > 0) return RESTS.find((r) => r > p + EPS) ?? null;
+    for (let i = RESTS.length - 1; i >= 0; i--) if (RESTS[i] < p - EPS) return RESTS[i];
+    return null;
+  };
+
+  let stepping = false;
+  let swallow = false;
+  let stepAt = -1e9;
+  const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  const go = (rest) => {
+    stepping = true;
+    swallow = true;
+    stepAt = performance.now();
+    const top = hero.getBoundingClientRect().top + scrollY;
+    const y = top + rest * (hero.offsetHeight - innerHeight);
+    // Stays "stepping" for at least 700 ms even if the scroll lands sooner, so one gesture moves one caption
+    let landed = false;
+    let held = false;
+    const release = () => { if (landed && held) stepping = false; };
+    setTimeout(() => { held = true; release(); }, 700);
+    lenis.scrollTo(y, { duration: 1.2, easing: easeInOut, lock: true, force: true, onComplete: () => { landed = true; release(); } });
+  };
+  const block = (event) => {
+    if (event.cancelable) event.preventDefault();
+    return false;
+  };
+
+  // Wheel and trackpad: a new gesture is a pause of 200 ms or a sudden jump in speed
+  let lastWheel = 0;
+  let lastAbs = 0;
+  const onWheel = (dy, event) => {
+    if (!dy) return true; // sideways swipe
+    const now = performance.now();
+    const abs = Math.abs(dy);
+    // A swipe ramping up looks like a speed jump, so jumps only count well after the last step began
+    const fresh = now - lastWheel > 200 || (now - stepAt > 900 && abs > lastAbs * 1.8 && abs > 12);
+    lastWheel = now;
+    lastAbs = abs;
+    if (stepping || (swallow && !fresh)) return block(event);
+    swallow = false;
+    const rest = targetFor(Math.sign(dy));
+    if (rest === null) return true;
+    go(rest);
+    return block(event);
+  };
+
+  // Touch: the first few pixels of a swipe decide its direction; a captured swipe steps once
+  let touchAcc = 0;
+  let touchDir = 0;
+  let touchCaptured = false;
+  let touchStepped = false;
+  const onTouch = (dy, event) => {
+    if (event.type === 'touchstart') {
+      touchAcc = 0;
+      touchDir = 0;
+      touchCaptured = false;
+      touchStepped = false;
+      return true;
+    }
+    if (event.type === 'touchend') return !touchCaptured;
+    if (stepping) return block(event);
+    touchAcc += dy;
+    if (!touchDir) {
+      if (Math.abs(touchAcc) < 6) return pinned() ? block(event) : true;
+      touchDir = Math.sign(touchAcc);
+      touchCaptured = targetFor(touchDir) !== null;
+    }
+    if (!touchCaptured) return true;
+    if (!touchStepped && Math.abs(touchAcc) > 28) {
+      touchStepped = true;
+      const rest = targetFor(touchDir);
+      if (rest !== null) go(rest);
+    }
+    return block(event);
+  };
+
+  lenis.options.virtualScroll = ({ deltaY, event }) => {
+    if (lenis.isStopped || event.ctrlKey) return true; // menu open or pinch-zoom: leave it alone
+    return event.type.includes('touch') ? onTouch(deltaY, event) : onWheel(deltaY, event);
+  };
+
+  // Keyboard
+  addEventListener('keydown', (e) => {
+    if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || lenis.isStopped) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, button, a, [contenteditable]')) return;
+    const down = e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey);
+    const up = e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey);
+    if (!down && !up) return;
+    if (stepping) {
+      e.preventDefault();
+      return;
+    }
+    const rest = targetFor(down ? 1 : -1);
+    if (rest === null) return;
+    e.preventDefault();
+    go(rest);
+  });
+
+  // Coasting back up into the hero from below lands on the last caption instead of gliding past it
+  let wasPinned = pinned();
+  lenis.on('scroll', () => {
+    const now = pinned();
+    if (now && !wasPinned && !stepping && lenis.direction < 0) go(RESTS[RESTS.length - 1]);
+    wasPinned = now;
+  });
 }
