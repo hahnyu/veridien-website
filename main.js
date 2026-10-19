@@ -13,7 +13,7 @@
   /* Smooth inertia scrolling */
   let lenis = null;
   if (!reduce && typeof window.Lenis === 'function') {
-    lenis = new window.Lenis({ lerp: 0.09, anchors: { offset: -96 } });
+    lenis = new window.Lenis({ lerp: 0.12, anchors: { offset: -96 } });
     window.veridienLenis = lenis; // the Home hero steps through its captions with it
     // Lenis turns smoothing off under the OS Reduce Motion setting; the site doesn't honor it (see `reduce`)
     if (!reduce) Object.defineProperty(lenis, 'prefersReducedMotion', { get: () => false });
@@ -118,9 +118,9 @@
       next.classList.remove('no-anim');
       next.classList.add('is-in');
       fit();
-      setTimeout(advance, current === last ? 3600 : 1500);
+      setTimeout(advance, current === last ? 2600 : 1150);
     };
-    setTimeout(advance, 1900);
+    setTimeout(advance, 1300);
   };
 
   /* Start sequence (after the intro screen, if it plays) */
@@ -140,10 +140,11 @@
   if (playIntro) {
     try { sessionStorage.setItem('veridien-intro', '1'); } catch (e) { /* storage unavailable */ }
     if (lenis) lenis.stop();
+    // A brief wordmark flash (it also covers the 3D hero's first frames); content starts at 400 ms
     requestAnimationFrame(() => preloader.classList.add('is-active'));
-    setTimeout(() => preloader.classList.add('is-leaving'), 1500);
-    setTimeout(() => { if (lenis) lenis.start(); start(); }, 1850);
-    setTimeout(() => preloader.remove(), 2700);
+    setTimeout(() => preloader.classList.add('is-leaving'), 250);
+    setTimeout(() => { if (lenis) lenis.start(); start(); }, 400);
+    setTimeout(() => preloader.remove(), 800);
   } else {
     if (preloader) preloader.remove();
     requestAnimationFrame(start);
@@ -243,6 +244,9 @@
       return `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${a.width / b.width}, ${a.height / b.height})`;
     };
     const timing = (ms) => ({ duration: ms, easing: 'cubic-bezier(0.52, 0.01, 0, 1)' });
+    const GROW = 420; // ms; the contents (styles.css) fade in from 200 ms
+    const SHRINK = 320;
+    const SHRINK_DELAY = 60; // contents fade out first
     const setHash = (slug) => {
       try { history.replaceState(null, '', slug ? `#${slug}` : location.pathname + location.search); } catch (e) { /* file:// */ }
     };
@@ -257,6 +261,7 @@
       if (art && !art.firstElementChild) {
         const svg = btn.querySelector('svg').cloneNode(true);
         svg.classList.remove('is-in');
+        svg.setAttribute('data-reveal', 'draw');
         art.appendChild(svg);
       }
       body.appendChild(detail);
@@ -266,10 +271,10 @@
       if (lenis) lenis.stop();
       root.classList.add('work-open');
       setHash(btn.dataset.work);
-      if (!instant) panel.animate([{ transform: fromThumb() }, { transform: 'none' }], timing(700));
+      if (!instant) panel.animate([{ transform: fromThumb() }, { transform: 'none' }], timing(GROW));
       requestAnimationFrame(() => {
         dialog.classList.add('is-open');
-        if (art) setTimeout(() => art.firstElementChild.classList.add('is-in'), 350);
+        if (art) setTimeout(() => art.firstElementChild.classList.add('is-in'), 150);
       });
     };
 
@@ -289,7 +294,7 @@
         setHash('');
         card.focus({ preventScroll: true });
       };
-      const shrink = panel.animate([{ transform: 'none' }, { transform: fromThumb() }], { ...timing(520), delay: 140, fill: 'forwards' });
+      const shrink = panel.animate([{ transform: 'none' }, { transform: fromThumb() }], { ...timing(SHRINK), delay: SHRINK_DELAY, fill: 'forwards' });
       // The timeout covers browsers that skip the finish event (e.g. the tab is hidden mid-close)
       let done = false;
       const end = () => {
@@ -299,7 +304,7 @@
         shrink.cancel();
       };
       shrink.onfinish = end;
-      setTimeout(end, 760);
+      setTimeout(end, SHRINK + SHRINK_DELAY + 100);
     };
 
     cards.forEach((btn) => btn.addEventListener('click', () => open(btn)));

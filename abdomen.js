@@ -80,6 +80,10 @@ function start() {
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
   const sim = buildSimulator({ quality });
   scene.add(sim.root);
+  // Crease shading fills in during idle moments while the closed cover still hides the organs
+  const later = window.requestIdleCallback ? (f) => requestIdleCallback(f, { timeout: 120 }) : (f) => setTimeout(f, 30);
+  const shade = () => { if (!sim.shadeStep(4)) later(shade); };
+  later(shade);
 
   /* Module labels: pills pinned to each module's projected center */
   const labelLayer = hero.querySelector('.sim-labels');
@@ -119,7 +123,7 @@ function start() {
   /* Camera rig */
   const baseTarget = new THREE.Vector3(0, 1.1, 0.7);
   const overview = new THREE.Vector3(11.6, 13.2, 21);
-  const focusOffset = new THREE.Vector3(3.8, 3.4, 7.4);
+  const focusOffset = new THREE.Vector3(3.4, 3.05, 6.7);
   const pelvicWorld = new THREE.Vector3();
   const lookAt = new THREE.Vector3();
   const tmp = new THREE.Vector3();
@@ -184,7 +188,7 @@ function start() {
   const render = (now) => {
     adapt(now);
     readProgress();
-    p += (target.p - p) * (reduce ? 1 : 0.14);
+    p += (target.p - p) * (reduce ? 1 : 0.2);
     if (Math.abs(target.p - p) < 0.0005) p = target.p;
     const t = now / 1000;
     const tl = timeline(p);
@@ -235,6 +239,9 @@ function start() {
    fast flick can't skip text. Momentum left over from a gesture is swallowed until a new one
    starts. Above the first caption and below the last, scrolling is free. */
 const RESTS = [0, 0.2, 0.45, 0.72, 0.94]; // scroll progress where each caption sits
+const GLIDE = 0.7; // s, one caption to the next
+const HOLD = 450; // ms a step blocks further input at minimum, even if the glide lands sooner
+const JUMP_GATE = 600; // ms after a step starts before a sudden speed jump can count as a new gesture
 
 function stepThroughCaptions(progressNow) {
   const lenis = window.veridienLenis;
@@ -263,12 +270,12 @@ function stepThroughCaptions(progressNow) {
     stepAt = performance.now();
     const top = hero.getBoundingClientRect().top + scrollY;
     const y = top + rest * (hero.offsetHeight - innerHeight);
-    // Stays "stepping" for at least 700 ms even if the scroll lands sooner, so one gesture moves one caption
+    // Stays "stepping" for at least HOLD ms even if the scroll lands sooner, so one gesture moves one caption
     let landed = false;
     let held = false;
     const release = () => { if (landed && held) stepping = false; };
-    setTimeout(() => { held = true; release(); }, 700);
-    lenis.scrollTo(y, { duration: 1.2, easing: easeInOut, lock: true, force: true, onComplete: () => { landed = true; release(); } });
+    setTimeout(() => { held = true; release(); }, HOLD);
+    lenis.scrollTo(y, { duration: GLIDE, easing: easeInOut, lock: true, force: true, onComplete: () => { landed = true; release(); } });
   };
   const block = (event) => {
     if (event.cancelable) event.preventDefault();
@@ -283,7 +290,7 @@ function stepThroughCaptions(progressNow) {
     const now = performance.now();
     const abs = Math.abs(dy);
     // A swipe ramping up looks like a speed jump, so jumps only count well after the last step began
-    const fresh = now - lastWheel > 200 || (now - stepAt > 900 && abs > lastAbs * 1.8 && abs > 12);
+    const fresh = now - lastWheel > 200 || (now - stepAt > JUMP_GATE && abs > lastAbs * 1.8 && abs > 12);
     lastWheel = now;
     lastAbs = abs;
     if (stepping || (swallow && !fresh)) return block(event);

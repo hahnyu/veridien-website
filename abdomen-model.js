@@ -1,410 +1,30 @@
 /* Modular abdominal simulator, built entirely in code.
    A base tray (with vessels and kidneys), a layered abdominal wall, and four swappable
-   organ modules. Generic organs are shaped from noise-displaced spheres and variable-radius
-   tubes, shaded as translucent hydrogel.
+   organ modules, each built in organs/*.js from the shared anatomy-kit.js. Generic organs are shaped from noise-displaced spheres and variable-radius
+   tubes, shaded as cast PVA hydrogel.
 
    update({ explode, swap, scan, time }) drives everything:
      explode 0..1  wall lifts off, then modules separate along their own vectors
      swap    0..1  pelvic uterus morphs from healthy to fibroid
      scan    0..1  imaging planes sweep through the pelvic module */
-import * as THREE from 'three';
-import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-const CLINICAL = new THREE.Color('#4fa3d1');
-const clamp01 = (v) => Math.min(Math.max(v, 0), 1);
-const smooth = (v) => { const t = clamp01(v); return t * t * (3 - 2 * t); };
-const easeInOut = (v) => { const t = clamp01(v); return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
-
-/* Cheap, deterministic organic noise (sum of sines), roughly -1..1 */
-const noise3 = (x, y, z) =>
-  Math.sin(x * 1.7 + 1.3) * Math.sin(y * 2.3 + 0.4) * Math.sin(z * 1.9 + 2.1) +
-  0.5 * Math.sin(x * 3.1 + 0.7) * Math.sin(y * 3.7 + 1.9) * Math.sin(z * 2.9 + 0.2) +
-  0.25 * Math.sin(x * 6.3 + 2.2) * Math.sin(y * 5.9 + 0.8) * Math.sin(z * 6.7 + 1.4);
-
-/* ---------------------------------------------------------------- geometry */
-
-/* Smooth closed organ: a unit sphere pushed through deform(x, y, z, n) -> [X, Y, Z],
-   where n is a noise sample. An optional second deform becomes a morph target. */
-function blob({ detail = 4, freq = 1.6, seed = 0, deform, morph = null }) {
-  let g = new THREE.IcosahedronGeometry(1, detail);
-  g.deleteAttribute('normal');
-  g.deleteAttribute('uv');
-  g = mergeVertices(g);
-  const unit = g.attributes.position.array.slice();
-  const shapeWith = (fn) => {
-    const out = new Float32Array(unit.length);
-    for (let i = 0; i < unit.length; i += 3) {
-      const x = unit[i], y = unit[i + 1], z = unit[i + 2];
-      const n = noise3(x * freq + seed, y * freq - seed * 0.7, z * freq + seed * 1.3);
-      const p = fn(x, y, z, n);
-      out[i] = p[0]; out[i + 1] = p[1]; out[i + 2] = p[2];
-    }
-    return out;
-  };
-  g.setAttribute('position', new THREE.BufferAttribute(shapeWith(deform), 3));
-  g.computeVertexNormals();
-  if (morph) {
-    const tmp = new THREE.BufferGeometry();
-    tmp.setIndex(g.index);
-    tmp.setAttribute('position', new THREE.BufferAttribute(shapeWith(morph), 3));
-    tmp.computeVertexNormals();
-    g.morphAttributes.position = [tmp.attributes.position];
-    g.morphAttributes.normal = [tmp.attributes.normal];
-  }
-  return g;
-}
-
-/* Tube along a smooth curve with radius(t, angle); ends taper closed. */
-function tube(points, { segments = 240, radial = 18, radius }) {
-  const curve = new THREE.CatmullRomCurve3(points.map((p) => new THREE.Vector3(...p)), false, 'centripetal');
-  const frames = curve.computeFrenetFrames(segments, false);
-  const pos = [];
-  const idx = [];
-  const P = new THREE.Vector3();
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-    curve.getPointAt(t, P);
-    const N = frames.normals[i];
-    const B = frames.binormals[i];
-    for (let j = 0; j < radial; j++) {
-      const a = (j / radial) * Math.PI * 2;
-      const r = radius(t, a);
-      const c = Math.cos(a), s = Math.sin(a);
-      pos.push(P.x + r * (c * N.x + s * B.x), P.y + r * (c * N.y + s * B.y), P.z + r * (c * N.z + s * B.z));
-    }
-  }
-  for (let i = 0; i < segments; i++) {
-    for (let j = 0; j < radial; j++) {
-      const a = i * radial + j;
-      const b = (i + 1) * radial + j;
-      const c = (i + 1) * radial + ((j + 1) % radial);
-      const d = i * radial + ((j + 1) % radial);
-      idx.push(a, d, b, b, d, c);
-    }
-  }
-  const start = pos.length / 3;
-  curve.getPointAt(0, P);
-  pos.push(P.x, P.y, P.z);
-  const end = start + 1;
-  curve.getPointAt(1, P);
-  pos.push(P.x, P.y, P.z);
-  const last = segments * radial;
-  for (let j = 0; j < radial; j++) {
-    idx.push(start, (j + 1) % radial, j);
-    idx.push(end, last + j, last + ((j + 1) % radial));
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  return g;
-}
-
-/* Rounded ends for tube radius functions */
-const capped = (t, edge = 0.04) => {
-  const e = Math.min(t, 1 - t);
-  return e >= edge ? 1 : Math.sqrt(Math.max(0, 1 - Math.pow(1 - e / edge, 2)));
-};
-
-function roundedRect(w, d, r) {
-  const s = new THREE.Shape();
-  const x = -w / 2, y = -d / 2;
-  s.moveTo(x + r, y);
-  s.lineTo(x + w - r, y);
-  s.quadraticCurveTo(x + w, y, x + w, y + r);
-  s.lineTo(x + w, y + d - r);
-  s.quadraticCurveTo(x + w, y + d, x + w - r, y + d);
-  s.lineTo(x + r, y + d);
-  s.quadraticCurveTo(x, y + d, x, y + d - r);
-  s.lineTo(x, y + r);
-  s.quadraticCurveTo(x, y, x + r, y);
-  return s;
-}
-
-/* Boxy dome (upper half of a superellipsoid), like a torso trainer cover.
-   Unit size; scale by (A, B, C). Exponent p > 2 squares off the sides. */
-const DOME_P = 3.0;
-function superDome(p = DOME_P, wSeg = 112, hSeg = 56) {
-  const g = new THREE.SphereGeometry(1, wSeg, hSeg, 0, Math.PI * 2, 0, Math.PI / 2);
-  const pos = g.attributes.position;
-  for (let i = 0; i < pos.count; i++) {
-    const x = pos.getX(i), y = pos.getY(i), z = pos.getZ(i);
-    const k = Math.pow(Math.abs(x) ** p + Math.abs(y) ** p + Math.abs(z) ** p, 1 / p);
-    pos.setXYZ(i, x / k, y / k, z / k);
-  }
-  g.computeVertexNormals();
-  return g;
-}
-function superOutline(a, c, p = DOME_P, steps = 160) {
-  const pts = [];
-  for (let i = 0; i < steps; i++) {
-    const t = (i / steps) * Math.PI * 2;
-    const ct = Math.cos(t), st = Math.sin(t);
-    pts.push(new THREE.Vector2(a * Math.sign(ct) * Math.abs(ct) ** (2 / p), c * Math.sign(st) * Math.abs(st) ** (2 / p)));
-  }
-  return pts;
-}
-
-/* ---------------------------------------------------------------- materials */
-
-/* Translucent hydrogel: clearcoat + sheen, partial transmission on capable devices,
-   and a fresnel rim so edges glow as if lit from behind. */
-function hydrogel(color, { quality, rim = null, rimStrength = 0.42, transmission = 0.22, roughness = 0.3, opacity = 1, emissive = 0.04 }) {
-  const base = new THREE.Color(color);
-  const params = {
-    color: base,
-    roughness,
-    metalness: 0,
-    clearcoat: 1,
-    clearcoatRoughness: 0.16,
-    sheen: 0.35,
-    sheenRoughness: 0.5,
-    sheenColor: base.clone().lerp(new THREE.Color('#ffffff'), 0.25),
-    emissive: base.clone().multiplyScalar(emissive),
-    envMapIntensity: 0.85,
-  };
-  if (quality === 'high' && opacity === 1) {
-    Object.assign(params, {
-      transmission,
-      thickness: 1.4,
-      ior: 1.36,
-      attenuationColor: base.clone().multiplyScalar(0.55),
-      attenuationDistance: 0.9,
-    });
-  } else {
-    Object.assign(params, { transparent: opacity < 1 || quality !== 'high', opacity: opacity < 1 ? opacity : 0.94 });
-  }
-  const m = new THREE.MeshPhysicalMaterial(params);
-  const rimColor = new THREE.Color(rim || base.clone().offsetHSL(0, 0.1, 0.18));
-  m.onBeforeCompile = (shader) => {
-    shader.uniforms.rimColor = { value: rimColor };
-    shader.uniforms.rimStrength = { value: rimStrength };
-    m.userData.shader = shader;
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 rimColor;\nuniform float rimStrength;')
-      .replace(
-        '#include <emissivemap_fragment>',
-        `#include <emissivemap_fragment>
-        {
-          float facing = clamp( abs( dot( normal, normalize( vViewPosition ) ) ), 0.0, 1.0 );
-          totalEmissiveRadiance += rimColor * pow( 1.0 - facing, 2.6 ) * rimStrength;
-        }`
-      );
-  };
-  m.customProgramCacheKey = () => 'veridien-hydrogel';
-  return m;
-}
-
-/* ---------------------------------------------------------------- organs */
-
-function makeOrgans(quality) {
-  const mat = (c, o = {}) => hydrogel(c, { quality, ...o });
-  const parts = {};
-
-  // Liver: large wedge, thick on the patient's right (viewer's left), flat underside
-  parts.liver = new THREE.Mesh(
-    blob({
-      detail: 5, seed: 0.3,
-      deform: (x, y, z, n) => {
-        const right = (1 - x) / 2; // 1 at the patient's right (thick lobe), 0 at the left tip
-        const thick = 0.22 + 0.95 * Math.pow(right, 0.85);
-        const front = 1 - 0.55 * Math.max(0, z); // thinner toward the sharp anterior edge
-        const yy = y < 0 ? y * 0.32 : y; // flat underside
-        const depth = 0.7 + 0.85 * right;
-        const r = 1 + 0.04 * n;
-        return [x * 2.6 * r, yy * thick * front * 1.2 * r, z * depth * r];
-      },
-    }),
-    mat('#6e1d24', { rimStrength: 0.4 })
-  );
-  parts.liver.position.set(-1.35, 1.35, -2.05);
-  parts.liver.rotation.set(0.08, 0.12, -0.08);
-
-  // Gallbladder: small pear tucked under the liver
-  parts.gallbladder = new THREE.Mesh(
-    blob({ seed: 1.1, deform: (x, y, z, n) => { const r = (0.82 + 0.22 * z) * (1 + 0.04 * n); return [x * 0.36 * r, y * 0.34 * r, z * 0.78]; } }),
-    mat('#5f8a4e', { rimStrength: 0.55 })
-  );
-  parts.gallbladder.position.set(-1.25, 0.72, -0.95);
-  parts.gallbladder.rotation.set(0.3, -0.5, 0.2);
-
-  // Stomach: J-shaped tube from the cardia, through fundus and body, to the pylorus
-  parts.stomach = new THREE.Mesh(
-    tube([[0.35, 1.7, -3.15], [1.35, 1.75, -2.95], [2.35, 1.45, -2.25], [2.45, 1.2, -1.25], [1.7, 1.05, -0.55], [0.6, 1.0, -0.6], [-0.1, 0.92, -0.95]], {
-      segments: 220, radial: 28,
-      radius: (t, a) => {
-        const body = 0.42 + 0.58 * Math.sin(Math.min(1, t * 1.6) * Math.PI * 0.95);
-        const taper = t > 0.62 ? 1 - (t - 0.62) * 1.55 : 1;
-        return Math.max(0.2, body * taper) * capped(t, 0.05) * (1 + 0.025 * Math.sin(a * 3 + t * 30));
-      },
-    }),
-    mat('#cf7d5f')
-  );
-
-  // Spleen: dark bean high on the patient's left
-  parts.spleen = new THREE.Mesh(
-    blob({ seed: 2.4, deform: (x, y, z, n) => { const dent = 1 - 0.22 * Math.max(0, x); const r = dent * (1 + 0.05 * n); return [x * 0.5 * r, y * 0.42 * r, z * 1.0 * r]; } }),
-    mat('#5a2140')
-  );
-  parts.spleen.position.set(3.55, 1.05, -2.15);
-  parts.spleen.rotation.set(0.2, -0.6, 0.15);
-
-  // Pancreas: tapering, lobulated tube from head to tail
-  parts.pancreas = new THREE.Mesh(
-    tube([[-0.55, 0.55, -0.45], [0.4, 0.6, -0.85], [1.5, 0.68, -1.25], [2.6, 0.78, -1.75], [3.05, 0.86, -2.0]], {
-      segments: 120, radial: 16,
-      radius: (t, a) => (0.42 - 0.24 * t) * capped(t, 0.08) * (1 + 0.09 * Math.sin(t * 46 + a * 2) * Math.sin(a * 3)),
-    }),
-    mat('#d1a467', { rimStrength: 0.4 })
-  );
-
-  // Small bowel: a long meandering coil filling the mid-abdomen
-  const coil = [];
-  for (let i = 0; i <= 160; i++) {
-    const s = i / 160;
-    coil.push([
-      1.95 * Math.sin(s * Math.PI * 9 + 0.4) * (0.8 + 0.2 * Math.sin(s * 7)),
-      1.22 + 0.32 * Math.sin(s * Math.PI * 13 + 1.2),
-      -0.15 + 2.2 * s + 0.32 * Math.sin(s * Math.PI * 23),
-    ]);
-  }
-  parts.smallBowel = new THREE.Mesh(
-    tube(coil, { segments: 1100, radial: 12, radius: (t) => 0.21 * capped(t, 0.01) * (1 + 0.04 * Math.sin(t * 37)) }),
-    mat('#e3958a', { rimStrength: 0.4 })
-  );
-
-  // Colon: frames the abdomen, with haustral bulges, ending in the rectum
-  parts.colon = new THREE.Mesh(
-    tube([[-3.45, 0.85, 2.2], [-3.6, 1.05, 0.9], [-3.45, 1.35, -0.75], [-2.4, 1.85, -0.85], [0, 2.05, -0.55], [2.4, 1.9, -0.8], [3.55, 1.45, -0.6], [3.6, 1.1, 0.9], [3.2, 0.85, 2.15], [1.9, 0.7, 2.75], [0.7, 0.55, 2.95], [0.15, 0.45, 3.15]], {
-      segments: 520, radial: 20,
-      radius: (t, a) => {
-        const base = 0.34 - 0.1 * t;
-        const haustra = 1 + 0.07 * Math.pow(Math.abs(Math.sin(t * 62)), 2) + 0.04 * Math.cos(a * 3);
-        return base * haustra * capped(t, 0.02);
-      },
-    }),
-    mat('#9a5560')
-  );
-
-  // Appendix: small worm off the cecum
-  parts.appendix = new THREE.Mesh(
-    tube([[-3.4, 0.7, 2.35], [-3.15, 0.55, 2.75], [-2.75, 0.5, 2.85], [-2.5, 0.58, 2.65]], {
-      segments: 40, radial: 10, radius: (t) => 0.085 * capped(t, 0.15),
-    }),
-    mat('#9a5560')
-  );
-
-  // Bladder: rounded, slightly flattened sac at the front of the pelvis
-  parts.bladder = new THREE.Mesh(
-    blob({ seed: 3.3, deform: (x, y, z, n) => { const r = 1 + 0.04 * n; const yy = y > 0 ? y * 0.78 : y; return [x * 0.64 * r, yy * 0.44 * r, z * 0.54 * r]; } }),
-    mat('#b39563', { rimStrength: 0.4, transmission: 0.45 })
-  );
-  parts.bladder.position.set(0, 0.5, 3.15);
-
-  // Uterus: pear-shaped, anteverted over the bladder; morph target adds fibroid bulges
-  const fibroidSites = [
-    [0.58, 0.6, 0.38, 0.27],
-    [-0.66, 0.34, 0.22, 0.2],
-    [0.06, 0.92, -0.4, 0.17],
-  ];
-  const pear = (x, y, z, n) => {
-    const up = (y + 1) / 2;
-    const width = 0.48 + 0.52 * Math.pow(up, 0.7);
-    const r = 1 + 0.035 * n;
-    return [x * 0.82 * width * r, y * 1.05 * r, z * 0.6 * width * r];
-  };
-  parts.uterus = new THREE.Mesh(
-    blob({
-      detail: 5, seed: 4.1,
-      deform: pear,
-      morph: (x, y, z, n) => {
-        let bump = 0;
-        for (const [fx, fy, fz, s] of fibroidSites) {
-          const d2 = (x - fx) ** 2 + (y - fy) ** 2 + (z - fz) ** 2;
-          bump += s * 0.9 * Math.exp(-d2 / (s * s * 0.9));
-        }
-        const p = pear(x, y, z, n);
-        const k = 1 + bump;
-        return [p[0] * k, p[1] * k, p[2] * k];
-      },
-    }),
-    mat('#c9353d', { rimStrength: 0.6 })
-  );
-  parts.uterus.position.set(0, 1.25, 2.5);
-  parts.uterus.rotation.set(0.42, 0, 0);
-  parts.uterus.scale.setScalar(0.82);
-  parts.uterus.morphTargetInfluences = [0];
-
-  // Fallopian tubes curving out from the fundus, flaring at the ends, with ovaries beneath
-  const adnexa = new THREE.Group();
-  const tubeMat = mat('#c9474f', { rimStrength: 0.5, transmission: 0.15 });
-  const ovaryMat = mat('#d9a38f', { rimStrength: 0.5 });
-  for (const side of [-1, 1]) {
-    adnexa.add(new THREE.Mesh(
-      tube([[side * 0.55, 0.78, 0], [side * 1.05, 0.95, 0.05], [side * 1.55, 0.8, 0.12], [side * 1.85, 0.42, 0.18], [side * 1.7, 0.12, 0.2]], {
-        segments: 90, radial: 12,
-        radius: (t) => (0.075 + 0.11 * Math.pow(t, 6)) * (t < 0.05 ? capped(t, 0.05) : 1) * (t > 0.97 ? capped(t, 0.03) : 1),
-      }),
-      tubeMat
-    ));
-    const ovary = new THREE.Mesh(
-      blob({ detail: 3, seed: side * 2.7, deform: (x, y, z, n) => { const r = 1 + 0.06 * n; return [x * 0.34 * r, y * 0.2 * r, z * 0.22 * r]; } }),
-      ovaryMat
-    );
-    ovary.position.set(side * 1.25, 0.2, 0.22);
-    ovary.rotation.z = side * 0.4;
-    adnexa.add(ovary);
-  }
-  parts.uterus.add(adnexa);
-
-  // Fibroid nodules: pale, firm spheres partly embedded at the bulges
-  parts.fibroids = new THREE.Group();
-  const fibroidMat = hydrogel('#c99a92', { quality, rim: CLINICAL, rimStrength: 0.55, transmission: 0.08, roughness: 0.5, emissive: 0.02 });
-  for (const [fx, fy, fz, s] of fibroidSites) {
-    const len = Math.hypot(fx, fy, fz);
-    const node = new THREE.Mesh(
-      blob({ detail: 3, seed: fx * 9, deform: (x, y, z, n) => { const r = s * 1.05 * (1 + 0.06 * n); return [x * r, y * r, z * r]; } }),
-      fibroidMat
-    );
-    const p = pear(fx / len, fy / len, fz / len, 0);
-    node.position.set(p[0] * 1.0, p[1] * 1.0, p[2] * 1.0);
-    node.userData.home = node.position.clone();
-    node.scale.setScalar(0.001);
-    parts.fibroids.add(node);
-  }
-  parts.uterus.add(parts.fibroids);
-
-  // Kidneys: retroperitoneal beans, part of the base
-  const kidney = () => blob({ seed: 5.2, deform: (x, y, z, n) => { const dent = 1 - 0.28 * Math.max(0, -x); const r = dent * (1 + 0.04 * n); return [x * 0.42 * r, y * 0.32 * r, z * 0.72 * r]; } });
-  parts.kidneyL = new THREE.Mesh(kidney(), mat('#6a1f2c'));
-  parts.kidneyL.position.set(-2.2, 0.45, -0.75);
-  parts.kidneyL.rotation.set(0, 0.25, 0.3);
-  parts.kidneyR = new THREE.Mesh(kidney(), mat('#6a1f2c'));
-  parts.kidneyR.position.set(2.25, 0.45, -0.85);
-  parts.kidneyR.rotation.set(0, -0.25 + Math.PI, -0.3);
-
-  // Great vessels: aorta and IVC running the length of the base, iliac bifurcation below
-  const vessel = (pts, r, color) => new THREE.Mesh(
-    tube(pts, { segments: 120, radial: 14, radius: (t) => r * capped(t, 0.03) }),
-    mat(color, { rimStrength: 0.7, transmission: 0.2 })
-  );
-  parts.vessels = new THREE.Group();
-  parts.vessels.add(
-    vessel([[0.3, 0.32, -3.4], [0.32, 0.3, -1], [0.3, 0.3, 1.35]], 0.19, '#b3282f'),
-    vessel([[0.3, 0.3, 1.3], [0.85, 0.28, 2.1], [1.3, 0.26, 2.95]], 0.13, '#b3282f'),
-    vessel([[0.3, 0.3, 1.3], [-0.3, 0.28, 2.1], [-0.75, 0.26, 2.95]], 0.13, '#b3282f'),
-    vessel([[-0.35, 0.32, -3.4], [-0.36, 0.3, -1], [-0.4, 0.3, 1.25]], 0.21, '#3c5d8c')
-  );
-
-  return parts;
-}
+import { THREE, CLINICAL, clamp01, smooth, easeInOut, roundedRect, DOME_P, superDome, superOutline, hydrogel, occlusionJob } from './anatomy-kit.js';
+import { buildHepatobiliary } from './organs/hepatobiliary.js';
+import { buildUpperGI } from './organs/upper-gi.js';
+import { buildBowel } from './organs/bowel.js';
+import { buildPelvic } from './organs/pelvic.js';
+import { buildBase } from './organs/base.js';
 
 /* ---------------------------------------------------------------- simulator */
 
 export function buildSimulator({ quality = 'high' } = {}) {
   const root = new THREE.Group();
-  const parts = makeOrgans(quality);
+  const hepatobiliary = buildHepatobiliary();
+  const upperGI = buildUpperGI();
+  const bowel = buildBowel();
+  const pelvic = buildPelvic();
+  const anatomy = buildBase();
+  const parts = { uterus: pelvic.uterus, fibroids: pelvic.fibroids };
 
   // Base tray: graphite chassis with a low rim and hairline edges
   const base = new THREE.Group();
@@ -427,7 +47,7 @@ export function buildSimulator({ quality = 'high' } = {}) {
   const rimEdges = new THREE.LineSegments(new THREE.EdgesGeometry(rim.geometry, 25), edgeMat);
   rimEdges.rotation.copy(rim.rotation);
   rimEdges.position.copy(rim.position);
-  base.add(plate, rim, plateEdges, rimEdges, parts.vessels, parts.kidneyL, parts.kidneyR);
+  base.add(plate, rim, plateEdges, rimEdges, ...anatomy.meshes);
   base.position.z = 0.3;
 
   // Docking sockets: rings in the tray floor under each module; they light up as modules lift
@@ -441,15 +61,18 @@ export function buildSimulator({ quality = 'high' } = {}) {
 
   // Organ modules
   const modules = {
-    hepatobiliary: { label: 'Hepatobiliary', group: new THREE.Group(), vector: new THREE.Vector3(-4.4, 2.6, -2.2) },
-    upperGI: { label: 'Upper GI', group: new THREE.Group(), vector: new THREE.Vector3(4.2, 2.4, -2.9) },
-    bowel: { label: 'Bowel', group: new THREE.Group(), vector: new THREE.Vector3(0, 3.3, 1.1) },
-    pelvic: { label: 'Pelvic', group: new THREE.Group(), vector: new THREE.Vector3(-0.3, 1.1, 4.8) },
+    // tilt: how far a module rocks toward the viewer as it lifts, so flat organs show their shape
+    // instead of an edge (the liver tips back to show its underside: gallbladder, ducts, porta).
+    // The pelvic close-up stays level.
+    hepatobiliary: { label: 'Hepatobiliary', group: new THREE.Group(), vector: new THREE.Vector3(-4.4, 2.6, -2.2), tilt: -0.8 },
+    upperGI: { label: 'Upper GI', group: new THREE.Group(), vector: new THREE.Vector3(4.2, 2.4, -2.9), tilt: 0.5 },
+    bowel: { label: 'Bowel', group: new THREE.Group(), vector: new THREE.Vector3(0, 3.3, 1.1), tilt: 0.35 },
+    pelvic: { label: 'Pelvic', group: new THREE.Group(), vector: new THREE.Vector3(-0.3, 1.1, 4.8), tilt: 0 },
   };
-  modules.hepatobiliary.group.add(parts.liver, parts.gallbladder);
-  modules.upperGI.group.add(parts.stomach, parts.spleen, parts.pancreas);
-  modules.bowel.group.add(parts.smallBowel, parts.colon, parts.appendix);
-  modules.pelvic.group.add(parts.uterus, parts.bladder);
+  modules.hepatobiliary.group.add(...hepatobiliary.meshes);
+  modules.upperGI.group.add(...upperGI.meshes);
+  modules.bowel.group.add(...bowel.meshes);
+  modules.pelvic.group.add(...pelvic.meshes);
   socketAt(-1.4, -1.9, 1.1);
   socketAt(2.1, -1.6, 0.9);
   socketAt(0, 1.0, 1.2);
@@ -472,7 +95,7 @@ export function buildSimulator({ quality = 'high' } = {}) {
   skin.scale.set(A, B, C);
 
   const layer = (color, s) => {
-    const m = hydrogel(color, { quality: 'low', opacity: 0.12, rimStrength: 0.45, roughness: 0.25 });
+    const m = hydrogel(color, { opacity: 0.12, roughness: 0.35, vertexColors: false, glow: 0.3, edge: 0.25 });
     m.side = THREE.DoubleSide;
     m.depthWrite = false;
     const mesh = new THREE.Mesh(shellGeo, m);
@@ -540,7 +163,7 @@ export function buildSimulator({ quality = 'high' } = {}) {
   const scan = new THREE.Group();
   const scanPlaneMat = new THREE.MeshBasicMaterial({ color: CLINICAL, transparent: true, opacity: 0.12, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false });
   const scanEdgeMat = new THREE.LineBasicMaterial({ color: CLINICAL, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending });
-  const scanShape = roundedRect(3.4, 2.6, 0.22);
+  const scanShape = roundedRect(3.6, 2.6, 0.22);
   const scanGeo = new THREE.ShapeGeometry(scanShape, 16);
   const scanEdges = new THREE.EdgesGeometry(scanGeo);
   const scanPlanes = [];
@@ -560,6 +183,29 @@ export function buildSimulator({ quality = 'high' } = {}) {
   });
   root.position.y = -0.6;
 
+  // Crease shading: organs start unshaded (white vertex colors) and shadeStep(ms) fills it in
+  // a slice at a time. Fibroids are posed at full size while it runs so they shade the uterus.
+  [base, ...Object.values(modules).map((m) => m.group)].forEach((g) => g.traverse((o) => {
+    if (o.isMesh && o.material.vertexColors) {
+      o.geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(o.geometry.attributes.position.count * 3).fill(1), 3));
+    }
+  }));
+  const shadeJobs = [
+    ...Object.values(modules).map((m) => occlusionJob(m.group, { floorY: 0.02 })),
+    occlusionJob(base, { cell: 0.12, floorY: 0.02 }),
+  ];
+  function shadeStep(budgetMs = 6) {
+    if (!shadeJobs.length) return true;
+    const sizes = parts.fibroids.children.map((node) => node.scale.x);
+    parts.fibroids.children.forEach((node) => node.scale.setScalar(1));
+    const end = performance.now() + budgetMs;
+    while (shadeJobs.length && performance.now() < end) {
+      if (shadeJobs[0].next().done) shadeJobs.shift();
+    }
+    parts.fibroids.children.forEach((node, i) => node.scale.setScalar(sizes[i]));
+    return !shadeJobs.length;
+  }
+
   // Anchor points for labels (module centers in local space)
   const box = new THREE.Box3();
   Object.values(modules).forEach((m) => {
@@ -572,6 +218,8 @@ export function buildSimulator({ quality = 'high' } = {}) {
   scan.position.set(modules.pelvic.anchor.x, 0, modules.pelvic.anchor.z);
 
   const state = { explode: 0, swap: 0, scan: 0 };
+  const pivot = new THREE.Vector3();
+  const pivotR = new THREE.Vector3();
 
   function update({ explode = state.explode, swap = state.swap, scan: scanP = state.scan, isolate = 0, time = 0 } = {}) {
     Object.assign(state, { explode, swap, scan: scanP });
@@ -596,6 +244,9 @@ export function buildSimulator({ quality = 'high' } = {}) {
       const away = m === modules.pelvic ? 0 : iso;
       m.group.position.copy(m.home).addScaledVector(m.vector, spread + away * 2.2);
       m.group.position.y += Math.sin(time * 0.9 + i * 1.7) * 0.06 * spread + away * 4;
+      // Tilt around the module's own center, not the group origin
+      m.group.rotation.x = m.tilt * spread;
+      if (m.anchor && m.tilt) m.group.position.add(pivot.copy(m.anchor).sub(pivotR.copy(m.anchor).applyEuler(m.group.rotation)));
       m.group.visible = away < 0.98;
     });
     base.position.y = -iso * 11;
@@ -627,7 +278,7 @@ export function buildSimulator({ quality = 'high' } = {}) {
   [fat, muscle].forEach((s) => { s.userData.baseOpacity = s.material.opacity; });
   update({ explode: 0 });
 
-  return { root, modules, update, state };
+  return { root, modules, update, state, shadeStep };
 }
 
 /* Environment and lights shared by every page that shows the simulator */
@@ -638,13 +289,13 @@ export function stageScene(renderer, scene) {
   pmrem.dispose();
 
   scene.add(new THREE.HemisphereLight('#c9d6e2', '#0b0b0c', 0.35));
-  const key = new THREE.DirectionalLight('#fff3e6', 1.9);
+  const key = new THREE.DirectionalLight('#fff3e6', 2.0);
   key.position.set(-6, 10, 8);
-  const rimBlue = new THREE.DirectionalLight(CLINICAL, 3.2);
+  const rimBlue = new THREE.DirectionalLight(CLINICAL, 1.5);
   rimBlue.position.set(-9, 4, -10);
-  const rimWarm = new THREE.DirectionalLight('#ffb48c', 1.6);
+  const rimWarm = new THREE.DirectionalLight('#ffc2a0', 2.4);
   rimWarm.position.set(10, 3, -8);
-  const under = new THREE.PointLight('#4fa3d1', 14, 18, 1.6);
+  const under = new THREE.PointLight('#4fa3d1', 6, 18, 1.6);
   under.position.set(0, -1.5, 2);
   scene.add(key, rimBlue, rimWarm, under);
 }

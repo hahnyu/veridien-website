@@ -17,7 +17,8 @@ Then open http://localhost:8000.
 - `index.html`, `research.html`, `people.html`, `join.html`, `clinicians.html`: the pages
 - `styles.css`: shared styles
 - `main.js`: motion, menu, forms, and the Research project panels
-- `abdomen-model.js`, `abdomen.js`: the 3D modular simulator on the Home page (three.js)
+- `abdomen.js`, `abdomen-model.js`: the 3D modular simulator on the Home page (three.js): the scroll-driven hero and the assembled model
+- `anatomy-kit.js`, `organs/`: shared geometry and material code, and one file per organ module (built entirely in code; there are no mesh files)
 - `artwork.js`: the MRI-slice artwork on For clinicians
 - `assets/`: images
 
