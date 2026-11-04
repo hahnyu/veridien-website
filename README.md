@@ -21,7 +21,14 @@ The site is written to `build/client` as plain static files.
 
 ## Deploy
 
-Deploy `build/client`, not the repository root: the root has no `index.html`. Pushing to `main` does not deploy on its own.
+Pushing to `main` deploys the site. Cloudflare Workers Builds (Worker `broad-surf-8ea7`, which serves veridienlabs.org and www.veridienlabs.org) runs:
+
+```bash
+pnpm run build
+npx wrangler deploy --assets=./build/client --name=broad-surf-8ea7 --compatibility-date=2026-11-01
+```
+
+It deploys `build/client`, not the repository root: the root has no `index.html`. The build log is under the Worker's Deployments tab in the Cloudflare dashboard.
 
 `public/_redirects` sends the old site's page URLs to the matching sections.
 
