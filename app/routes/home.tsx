@@ -1,11 +1,12 @@
 import { Compare } from "../compare";
-import { Partner, PartnerLink } from "../partner";
+import { glideTo } from "../glide";
 import { ScrollExplode } from "../scroll-explode";
-import { Wordmark } from "../wordmark";
+import { Partner, People, Research } from "../sections";
+import { SiteHeader } from "../site-header";
 import type { Route } from "./+types/home";
 
 const DESCRIPTION =
-  "Veridien is building a laparoscopic trainer for real anatomical variation: hydrogel organs tuned to handle like tissue, with a live digital twin of every instrument.";
+  "Veridien is building an AI-enabled laparoscopic trainer that works with our custom hydrogel tissue models.";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Veridien" },
@@ -22,22 +23,28 @@ export const meta: Route.MetaFunction = () => [
 
 export default function Home() {
   return (
-    <main>
-      <ScrollExplode alt="The Veridien dome simulator on its base, with two graspers and a laparoscope through its ports.">
-        <header className="hero-top">
-          <h1 className="wordmark">
-            <Wordmark />
-          </h1>
-          <PartnerLink />
-        </header>
-        <p className="hero-about">
-          Veridien is building a laparoscopic trainer for real anatomical variation: hydrogel organs
-          tuned to handle like tissue, on one reusable base. Cameras follow every instrument into a
-          live digital twin, so surgeons can practice unique cases with feedback as they work.
-        </p>
-      </ScrollExplode>
-      <Compare />
-      <Partner />
-    </main>
+    <>
+      <SiteHeader />
+      <main>
+        <ScrollExplode alt="The Veridien dome simulator on its base, with two graspers and a laparoscope through its ports.">
+          <div className="hero-copy">
+            <h1>Every patient’s anatomy is unique. Surgical training should be too.</h1>
+            <p className="hero-lede">
+              Veridien is building an AI-enabled laparoscopic trainer that works with our custom
+              hydrogel tissue models.
+            </p>
+            <div className="hero-actions">
+              <a className="button" href="#partner" onClick={glideTo}>
+                Partner with us
+              </a>
+            </div>
+          </div>
+        </ScrollExplode>
+        <Compare />
+        <Research />
+        <People />
+        <Partner />
+      </main>
+    </>
   );
 }

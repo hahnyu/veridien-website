@@ -5,7 +5,9 @@ type Shot = {
   /** Widths encoded in public/photos, largest last. Nothing is upscaled past its source. */
   widths: number[];
   alt: string;
-  label: ReactNode;
+  title: string;
+  text: string;
+  credit?: ReactNode;
 };
 
 const SHOTS: Shot[] = [
@@ -13,21 +15,25 @@ const SHOTS: Shot[] = [
     name: "twin",
     widths: [640, 960, 1000],
     alt: "A render from the laparoscope's viewpoint, with two graspers at the surface of the hydrogel uterus.",
-    label: "Digital twin, rendered",
+    title: "Digital twin",
+    text: "A rendered view of our digital twin. Cameras track every instrument, so surgeons get feedback as they work.",
   },
   {
     name: "simulator",
     widths: [640, 960, 1280, 1482],
     alt: "A laparoscope view of the Veridien hydrogel uterus, with a grasper on the left and a curved instrument below it.",
-    label: "Our simulator, through the scope",
+    title: "Hydrogel simulator",
+    text: "Our tissue models through the scope. Organs and pathology swap for each procedure on one reusable base.",
   },
   {
     name: "surgery",
     widths: [640, 960, 1040],
     alt: "A laparoscope view of a real uterus in a patient, with an instrument passing beneath it.",
-    label: (
+    title: "Real laparoscopy",
+    text: "The anatomy we build toward. Models can also be made from a patient’s own MRI or CT.",
+    credit: (
       <>
-        Real laparoscopy. Photo:{" "}
+        Photo:{" "}
         <a href="https://commons.wikimedia.org/wiki/File:Female_reproductive_system.jpg">
           Hic et nunc
         </a>
@@ -43,11 +49,12 @@ const SIZES = "(min-width: 1680px) 520px, (min-width: 820px) calc((100vw - 112px
 
 const url = (name: string, width: number) => `/photos/${name}-${width}.webp`;
 
-/** The same anatomy three ways: the point is that a reader compares them, so all three share one frame. */
+/** A reader is meant to compare these, so all three share one frame. Each explains one part of the product. */
 export function Compare() {
   return (
-    <section className="compare" aria-label="The simulator beside a render and a real laparoscopy">
-      <div className="compare-row">
+    <section id="platform" className="section" tabIndex={-1}>
+      <h2>Minimally invasive surgery, viewed digitally, through our simulator, and in real life.</h2>
+      <div className="columns">
         {SHOTS.map((shot) => (
           <figure key={shot.name} className="compare-shot">
             <img
@@ -60,7 +67,11 @@ export function Compare() {
               loading="lazy"
               decoding="async"
             />
-            <figcaption>{shot.label}</figcaption>
+            <figcaption>
+              <h3>{shot.title}</h3>
+              <p>{shot.text}</p>
+              {shot.credit && <p className="photo-credit">{shot.credit}</p>}
+            </figcaption>
           </figure>
         ))}
       </div>

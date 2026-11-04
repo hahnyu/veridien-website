@@ -21,8 +21,18 @@
   --ink: #12332b;
   --ink-soft: #4c6058;
   --green: #2f6b58;
-  --text: clamp(15px, 13px + 0.2vw, 17px);
+  --on-ink-soft: #b9cdc4;
+  --rule: rgb(18 51 43 / 0.14);
+
+  --text: clamp(16px, 15px + 0.15vw, 18px);
+  --h1: clamp(2.25rem, 1.2rem + 3.1vw, 4.25rem);
+  --h2: clamp(1.6rem, 1.15rem + 1.2vw, 2.4rem);
+
+  --header: 64px;
   --gutter: 20px;
+  --gap: 16px;
+  --page: 1600px;
+  --section: clamp(64px, 8vw, 120px);
 }
 
 @media (min-width: 768px) {
@@ -39,6 +49,7 @@
 
 html {
   background: var(--field);
+  scroll-padding-top: calc(var(--header) + 16px);
   -webkit-text-size-adjust: 100%;
 }
 
@@ -46,95 +57,164 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: "Schibsted Grotesk", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-size: var(--text);
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Pinned with the hero, then leaves with it: dark letters would not read over the photographs below. */
-.hero-top {
-  position: absolute;
-  z-index: 1;
-  top: max(var(--gutter), env(safe-area-inset-top));
-  right: max(var(--gutter), env(safe-area-inset-right));
-  left: max(var(--gutter), env(safe-area-inset-left));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  pointer-events: none;
-}
-
-.wordmark {
+h1,
+h2,
+h3,
+p,
+figure {
   margin: 0;
 }
 
-.hero-link,
-.partner-mail {
-  position: relative;
-  color: var(--ink);
+h1,
+h2 {
   font-weight: 500;
-  text-decoration: none;
-  transition: color 150ms ease, text-decoration-color 150ms ease;
+  text-wrap: balance;
 }
 
-.hero-link {
-  font-size: 15px;
-  pointer-events: auto;
+h1 {
+  font-size: var(--h1);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: var(--h2);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+h3 {
+  font-size: inherit;
+  font-weight: 500;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Sections take focus after a link glides to them, so a keyboard continues from the right place. */
+section:focus {
+  outline: none;
+}
+
+a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+.muted {
+  color: var(--ink-soft);
 }
 
 /* Small text, but a full-size target. */
-.hero-link::after,
+.site-nav a,
+.partner-mail {
+  position: relative;
+}
+
+.site-nav a::after,
 .partner-mail::after {
   content: "";
   position: absolute;
   inset: -12px -8px;
 }
 
-.hero-link:hover,
-.partner-mail:hover {
-  color: var(--green);
+.partner-mail {
+  color: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: rgb(18 51 43 / 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 
-.hero-link:focus-visible,
-.partner-mail:focus-visible,
-.compare-shot a:focus-visible {
-  border-radius: 2px;
-  outline: 2px solid var(--green);
-  outline-offset: 3px;
+.button {
+  display: inline-flex;
+  align-items: center;
+  height: 46px;
+  padding: 0 22px;
+  color: var(--field);
+  font-weight: 500;
+  text-decoration: none;
+  background: var(--ink);
+  border-radius: 6px;
+  transition: background-color 150ms ease, scale 150ms ease;
 }
 
-/*
- * Sits on the third image column, in the top half of the frame. Across all 150 frames the device
- * stays left of 57.3 % of the frame there, so the text never touches it. max() keeps that true on
- * very wide screens, where the capped column would otherwise drift left of that line.
- */
-.hero-about {
-  position: absolute;
-  z-index: 1;
-  bottom: 50%;
-  left: max(
-    calc((100% - min(100%, 1600px + 2 * var(--gutter))) / 2 + var(--gutter) + 2 * ((min(100%, 1600px + 2 * var(--gutter)) - 2 * var(--gutter) - 32px) / 3 + 16px)),
-    calc((100% - min(100%, 100dvh * 16 / 9)) / 2 + 0.6 * min(100%, 100dvh * 16 / 9))
-  );
-  width: calc((min(100%, 1600px + 2 * var(--gutter)) - 2 * var(--gutter) - 32px) / 3);
-  max-width: 40ch;
-  margin: 0;
-  font-size: var(--text);
-  line-height: 1.5;
-  text-wrap: pretty;
+.button:hover {
+  background: var(--green);
 }
 
-/* Too short to hang the text from the middle without reaching the top row. */
-@media (min-aspect-ratio: 1/1) and (max-height: 540px) {
-  .hero-about {
-    top: calc(var(--gutter) + 44px);
-    bottom: auto;
-  }
+.button:active {
+  scale: 0.96;
+}
+
+/* The header. Its edges line up with the page's columns, however wide the screen is. */
+.site-header {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header);
+  padding-right: max(var(--gutter), env(safe-area-inset-right), calc((100% - var(--page)) / 2));
+  padding-left: max(var(--gutter), env(safe-area-inset-left), calc((100% - var(--page)) / 2));
+  background: rgb(245 248 246 / 0.84);
+  backdrop-filter: blur(14px);
+}
+
+.wordmark {
+  display: block;
 }
 
 .wordmark-art {
   display: block;
   width: auto;
-  height: clamp(26px, 15px + 1.5vw, 36px);
+  height: clamp(22px, 18px + 0.5vw, 28px);
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(20px, 2.4vw, 36px);
+  font-size: 15px;
+}
+
+.site-nav a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.site-nav a:hover {
+  color: var(--green);
+}
+
+.site-nav-partner {
+  font-weight: 500;
+}
+
+@media (max-width: 719px) {
+  .site-nav-section {
+    display: none;
+  }
 }
 
 /* The extra height is the scroll distance; the stage stays pinned while the frames play through it. */
@@ -195,55 +275,105 @@ body {
   visibility: hidden;
 }
 
+.hero-copy {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 2.4vh, 28px);
+}
+
+.hero-lede {
+  max-width: 34em;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+  margin-top: 4px;
+}
+
 /*
- * A portrait screen would leave the 16:9 frame tiny, so crop in on the subject instead, and give
- * the text its own row under the frame.
+ * Wide screens: copy on the left, device on the right. The render's own field colour runs to the
+ * edge of its frame, so sliding the frame right leaves no seam. The shift puts the device right of
+ * 44 % of the frame, clear of the copy column, on every frame of the sequence.
+ */
+@media (min-aspect-ratio: 1/1) {
+  /* The frame fits under the header and sits on the bottom edge, so the device never slides behind the bar. */
+  .hero-stage {
+    align-items: flex-end;
+  }
+
+  .hero-frame {
+    width: min(100vw, (100vh - var(--header)) * 16 / 9);
+    width: min(100vw, (100dvh - var(--header)) * 16 / 9);
+    translate: 22.8% 0;
+  }
+
+  /* Scales with the column, so the headline breaks into the same four lines on every wide screen. */
+  .hero-copy h1 {
+    font-size: min(var(--h1), calc((40vw - var(--gutter)) / 8.4));
+  }
+
+  .hero-copy {
+    position: absolute;
+    top: var(--header);
+    bottom: 0;
+    left: max(var(--gutter), calc((100% - var(--page)) / 2));
+    justify-content: center;
+    width: calc(min(100%, var(--page) + 2 * var(--gutter)) * 0.4 - var(--gutter));
+    max-width: 600px;
+  }
+}
+
+/* A phone on its side. The header already has the partner link, so the sentence stays and the button goes. */
+@media (min-aspect-ratio: 1/1) and (max-height: 500px) {
+  .hero-copy h1 {
+    font-size: clamp(1.5rem, 7vh, 2.25rem);
+  }
+
+  .hero-actions {
+    display: none;
+  }
+}
+
+/*
+ * A portrait screen would leave the 16:9 frame tiny, so crop in on the subject under the copy. The
+ * device sits left of the frame's centre, so the shift centres it and keeps its shadow on screen.
  */
 @media (max-aspect-ratio: 1/1) {
   .hero-stage {
     display: grid;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: auto minmax(0, 1fr);
     grid-template-columns: minmax(0, 1fr);
     align-items: center;
     justify-items: center;
   }
 
-  /* The device sits left of the frame's centre, so the shift centres it and keeps its shadow on screen. */
-  .hero-frame {
+  .hero-copy {
     grid-row: 1;
+    grid-column: 1;
+    justify-self: stretch;
+    padding: calc(var(--header) + 12px) max(var(--gutter), env(safe-area-inset-right)) 0 max(var(--gutter), env(safe-area-inset-left));
+  }
+
+  .hero-frame {
+    grid-row: 2;
     grid-column: 1;
     width: 150vw;
     translate: 3.3% 0;
   }
-
-  .hero-about {
-    position: static;
-    grid-row: 2;
-    grid-column: 1;
-    width: auto;
-    max-width: 60ch;
-    padding: 0 max(var(--gutter), env(safe-area-inset-right)) max(var(--gutter), env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
-  }
 }
 
-/* A phone on its side has no empty side in the frame: shrink the frame to make one. */
-@media (min-aspect-ratio: 1/1) and (max-width: 819px) {
-  .hero-stage {
-    justify-content: flex-start;
+/* A small phone: as on its side, the sentence stays and the button goes, or the copy runs into the device. */
+@media (max-aspect-ratio: 1/1) and (max-height: 700px) {
+  .hero-copy h1 {
+    font-size: 1.75rem;
   }
 
-  .hero-frame {
-    width: min(100vw - 216px, 100dvh * 16 / 9);
-  }
-
-  .hero-about {
-    top: calc(var(--gutter) + 40px);
-    right: max(var(--gutter), env(safe-area-inset-right));
-    bottom: auto;
-    left: auto;
-    width: 196px;
-    font-size: 14px;
-    line-height: 1.45;
+  .hero-actions {
+    display: none;
   }
 }
 
@@ -261,38 +391,47 @@ body {
   }
 }
 
-.compare,
-.partner {
-  max-width: calc(1600px + 2 * var(--gutter));
+/* One rule for every section below the hero: a heading, then content on the same three columns. */
+.section {
+  max-width: calc(var(--page) + 2 * var(--gutter));
   margin-inline: auto;
-  padding-right: max(var(--gutter), env(safe-area-inset-right));
-  padding-left: max(var(--gutter), env(safe-area-inset-left));
+  padding: 0 max(var(--gutter), env(safe-area-inset-right)) var(--section) max(var(--gutter), env(safe-area-inset-left));
 }
 
-.compare {
-  padding-top: clamp(56px, 9vw, 128px);
-  padding-bottom: clamp(56px, 7vw, 104px);
-}
-
-.compare-row {
-  display: grid;
-  gap: 28px;
+.hero + .section {
+  padding-top: var(--section);
 }
 
 @media (min-width: 820px) {
-  .compare-row {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+  .section > h2 {
+    max-width: 62%;
   }
 }
 
-.compare-shot {
+.columns {
+  display: grid;
+  gap: 32px var(--gap);
+  margin-top: clamp(28px, 3.5vw, 48px);
+}
+
+@media (min-width: 820px) {
+  .columns {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.columns > * {
   min-width: 0;
-  margin: 0;
+}
+
+.columns h3 + p {
+  margin-top: 4px;
+  max-width: 40ch;
 }
 
 /* The outline keeps a light photograph from dissolving into the page. */
-.compare-shot img {
+.compare-shot img,
+.research-photo img {
   display: block;
   width: 100%;
   height: auto;
@@ -303,99 +442,186 @@ body {
   outline-offset: -1px;
 }
 
-.compare-shot figcaption {
+figcaption {
   margin-top: 10px;
   color: var(--ink-soft);
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.45;
-  text-wrap: pretty;
 }
 
-.compare-shot a {
+/* Under the images the caption is the explanation, so it reads as body text. */
+.compare-shot figcaption {
+  margin-top: 14px;
+  color: var(--ink);
+  font-size: var(--text);
+  line-height: 1.5;
+}
+
+.photo-credit {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.photo-credit a {
   color: inherit;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
 
-.compare-shot a:hover {
+.photo-credit a:hover {
   color: var(--ink);
 }
 
-.partner {
+.stack {
   display: grid;
-  gap: 12px;
-  padding-bottom: clamp(64px, 9vw, 136px);
-  font-size: var(--text);
-  line-height: 1.5;
+  margin-top: 12px;
+}
+
+.stack li {
+  display: grid;
+  align-content: center;
+  padding: 14px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.stack li:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+
+.stack p {
+  max-width: 44ch;
+}
+
+.stack .muted {
+  margin-top: 2px;
+  font-size: 15px;
+}
+
+.partner-row.partner-row {
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.partner-row img {
+  display: block;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+/* Trims the heading's leading, so the letters start level with the top of the photo. */
+@media (min-width: 820px) {
+  .research-col h3 {
+    margin-top: -6px;
+  }
+}
+
+/* Too narrow for three columns of this much text: the photo keeps its shape, partners go underneath. */
+@media (min-width: 820px) and (max-width: 1199px) {
+  .research {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .research-col:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+ * Photo, publications and partners share one top and one bottom. Each list splits its height into
+ * equal rows, so the rows line up across the two columns, and the photo crops to fill whatever
+ * height the text needs. The caption hangs below, so the row ends on the photo's bottom edge.
+ */
+@media (min-width: 1200px) {
+  .research-photo {
+    position: relative;
+  }
+
+  .research-photo img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .research-photo figcaption {
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+
+  .research-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .research-col .stack {
+    flex: 1;
+    grid-auto-rows: 1fr;
+  }
+}
+
+.person {
+  display: grid;
+  grid-template-columns: clamp(88px, 8vw, 120px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.person img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  outline: 1px solid rgb(0 0 0 / 0.1);
+  outline-offset: -1px;
+}
+
+.advisor {
+  margin-top: 28px;
+  color: var(--ink-soft);
+}
+
+/* The one dark band: where the page asks for something. */
+.partner {
+  color: var(--field);
+  background: var(--ink);
+}
+
+.partner-grid {
+  max-width: calc(var(--page) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: clamp(56px, 7vw, 96px) max(var(--gutter), env(safe-area-inset-right)) 28px max(var(--gutter), env(safe-area-inset-left));
+  gap: 16px var(--gap);
 }
 
 @media (min-width: 820px) {
-  .partner {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+  .partner-grid {
     align-items: baseline;
   }
 }
 
-/* Focus lands here after the link in the hero, so a keyboard continues from the right place. */
-.partner:focus {
-  outline: none;
-}
-
-.partner h2 {
-  margin: 0;
-  font: inherit;
-  font-weight: 500;
-  text-wrap: balance;
-}
-
 .partner p {
   max-width: 40ch;
-  margin: 0;
-  text-wrap: pretty;
 }
 
 .partner-mail {
   justify-self: start;
-  text-decoration: underline;
-  text-decoration-color: rgb(18 51 43 / 0.35);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-decoration-color: rgb(245 248 246 / 0.45);
 }
 
 .partner-mail:hover {
+  color: var(--on-ink-soft);
   text-decoration-color: currentColor;
 }
 
-/*
- * The hero answers to the scroll, so the section under it does too: each piece rises into place as
- * it enters. Only where the browser can tie it to the scroll, and never under reduced motion, so
- * everything is simply there otherwise.
- */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    @keyframes rise {
-      from {
-        opacity: 0;
-        translate: 0 20px;
-      }
-    }
+.partner a:focus-visible {
+  outline-color: var(--field);
+}
 
-    .compare-shot,
-    .partner > * {
-      animation: rise linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 35%;
-    }
-
-    .compare-shot:nth-child(2),
-    .partner > :nth-child(2) {
-      animation-range: entry 5% entry 40%;
-    }
-
-    .compare-shot:nth-child(3),
-    .partner > :nth-child(3) {
-      animation-range: entry 10% entry 45%;
-    }
-  }
+.partner-foot {
+  grid-column: 1 / -1;
+  margin-top: clamp(40px, 5vw, 72px);
+  color: var(--on-ink-soft);
+  font-size: 14px;
 }
