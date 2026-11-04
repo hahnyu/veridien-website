@@ -1,28 +1,42 @@
 # Veridien website
 
-Source for [veridienlabs.org](https://veridienlabs.org): a static site, plain HTML, CSS, and JavaScript, with no build step.
+Source for [veridienlabs.org](https://veridienlabs.org), built with React Router in framework mode (Vite, TypeScript). Every route is prerendered to static HTML at build time.
 
 ## Run it locally
 
-The 3D hero loads its modules over HTTP, so serve the folder instead of opening the files directly:
-
 ```bash
-python3 -m http.server 8000
+pnpm install
+pnpm dev
 ```
 
-Then open http://localhost:8000.
+Then open http://localhost:5173.
+
+## Build
+
+```bash
+pnpm build
+```
+
+The site is written to `build/client` as plain static files.
 
 ## Files
 
-- `index.html`, `research.html`, `people.html`, `join.html`, `clinicians.html`: the pages
-- `styles.css`: shared styles
-- `main.js`: motion, menu, forms, and the Research project panels
-- `abdomen.js`, `abdomen-model.js`: the 3D modular simulator on the Home page (three.js): the scroll-driven hero and the assembled model
-- `anatomy-kit.js`, `organs/`: shared geometry and material code, and one file per organ module (built entirely in code; there are no mesh files)
-- `artwork.js`: the MRI-slice artwork on For clinicians
-- `assets/`: images
+- `app/root.tsx`: the HTML document shell
+- `app/routes.ts`: the route list
+- `app/routes/`: one file per page
+- `app/app.css`: styles
+- `app/wordmark.tsx`: the name, as vector outlines of Schibsted Grotesk Medium (SIL Open Font License 1.1).
+- `app/scroll-explode.tsx`: the hero, a frame sequence scrubbed by the scroll position
+- `app/compare.tsx`: the three images under the hero
+- `app/partner.tsx`: the partner contact, and the link to it in the hero
+- `public/`: files served as they are
 
-three.js, Lenis, and the General Sans font load from public CDNs.
+The previous static site is on `main`.
+
+## Credits
+
+- `public/photos/surgery-*.webp`: cropped from [Female reproductive system.jpg](https://commons.wikimedia.org/wiki/File:Female_reproductive_system.jpg) by Hic et nunc, [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The crop stays under that licence, and the page must keep its credit line.
+- `public/fonts/`: Schibsted Grotesk, SIL Open Font License 1.1 (`public/fonts/OFL.txt`).
 
 ## Contact
 

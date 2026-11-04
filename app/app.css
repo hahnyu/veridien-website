@@ -1,0 +1,401 @@
+/* Schibsted Grotesk, the wordmark's own family (SIL OFL 1.1, public/fonts/OFL.txt). Latin subset only. */
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/schibsted-grotesk-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Schibsted Grotesk";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/fonts/schibsted-grotesk-latin-500-normal.woff2") format("woff2");
+}
+
+:root {
+  /* The render frames are delivered on this colour, so they have no visible border on the page. */
+  --field: #f5f8f6;
+  --ink: #12332b;
+  --ink-soft: #4c6058;
+  --green: #2f6b58;
+  --text: clamp(15px, 13px + 0.2vw, 17px);
+  --gutter: 20px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 40px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--field);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Schibsted Grotesk", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Pinned with the hero, then leaves with it: dark letters would not read over the photographs below. */
+.hero-top {
+  position: absolute;
+  z-index: 1;
+  top: max(var(--gutter), env(safe-area-inset-top));
+  right: max(var(--gutter), env(safe-area-inset-right));
+  left: max(var(--gutter), env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.wordmark {
+  margin: 0;
+}
+
+.hero-link,
+.partner-mail {
+  position: relative;
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.hero-link {
+  font-size: 15px;
+  pointer-events: auto;
+}
+
+/* Small text, but a full-size target. */
+.hero-link::after,
+.partner-mail::after {
+  content: "";
+  position: absolute;
+  inset: -12px -8px;
+}
+
+.hero-link:hover,
+.partner-mail:hover {
+  color: var(--green);
+}
+
+.hero-link:focus-visible,
+.partner-mail:focus-visible,
+.compare-shot a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--green);
+  outline-offset: 3px;
+}
+
+/*
+ * Sits on the third image column, in the top half of the frame. Across all 150 frames the device
+ * stays left of 57.3 % of the frame there, so the text never touches it. max() keeps that true on
+ * very wide screens, where the capped column would otherwise drift left of that line.
+ */
+.hero-about {
+  position: absolute;
+  z-index: 1;
+  bottom: 50%;
+  left: max(
+    calc((100% - min(100%, 1600px + 2 * var(--gutter))) / 2 + var(--gutter) + 2 * ((min(100%, 1600px + 2 * var(--gutter)) - 2 * var(--gutter) - 32px) / 3 + 16px)),
+    calc((100% - min(100%, 100dvh * 16 / 9)) / 2 + 0.6 * min(100%, 100dvh * 16 / 9))
+  );
+  width: calc((min(100%, 1600px + 2 * var(--gutter)) - 2 * var(--gutter) - 32px) / 3);
+  max-width: 40ch;
+  margin: 0;
+  font-size: var(--text);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* Too short to hang the text from the middle without reaching the top row. */
+@media (min-aspect-ratio: 1/1) and (max-height: 540px) {
+  .hero-about {
+    top: calc(var(--gutter) + 44px);
+    bottom: auto;
+  }
+}
+
+.wordmark-art {
+  display: block;
+  width: auto;
+  height: clamp(26px, 15px + 1.5vw, 36px);
+}
+
+/* The extra height is the scroll distance; the stage stays pinned while the frames play through it. */
+.hero {
+  height: 245vh;
+  height: 245dvh;
+}
+
+.hero-stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.hero-frame {
+  position: relative;
+  flex: none;
+  width: min(100vw, 100vh * 16 / 9);
+  width: min(100vw, 100dvh * 16 / 9);
+  aspect-ratio: 16 / 9;
+}
+
+.hero-surface,
+.hero-frame img,
+.hero-frame canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The image under the shell stays hidden until the lens opens over it. */
+.hero-inside {
+  visibility: hidden;
+}
+
+.hero-frame[data-lens] .hero-inside {
+  visibility: visible;
+}
+
+/* The lens keeps a trace of the shell, so it reads as seeing through it, not as a hole. */
+.hero-frame[data-lens] .hero-surface {
+  mask-image: radial-gradient(
+    circle var(--lens-r) at var(--lens-x) var(--lens-y),
+    rgb(0 0 0 / 0.1) 62%,
+    #000 100%
+  );
+}
+
+/* The first frame shows as plain HTML until the canvas has drawn over it. */
+.hero-frame canvas:not([data-ready]) {
+  visibility: hidden;
+}
+
+/*
+ * A portrait screen would leave the 16:9 frame tiny, so crop in on the subject instead, and give
+ * the text its own row under the frame.
+ */
+@media (max-aspect-ratio: 1/1) {
+  .hero-stage {
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    justify-items: center;
+  }
+
+  /* The device sits left of the frame's centre, so the shift centres it and keeps its shadow on screen. */
+  .hero-frame {
+    grid-row: 1;
+    grid-column: 1;
+    width: 150vw;
+    translate: 3.3% 0;
+  }
+
+  .hero-about {
+    position: static;
+    grid-row: 2;
+    grid-column: 1;
+    width: auto;
+    max-width: 60ch;
+    padding: 0 max(var(--gutter), env(safe-area-inset-right)) max(var(--gutter), env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
+  }
+}
+
+/* A phone on its side has no empty side in the frame: shrink the frame to make one. */
+@media (min-aspect-ratio: 1/1) and (max-width: 819px) {
+  .hero-stage {
+    justify-content: flex-start;
+  }
+
+  .hero-frame {
+    width: min(100vw - 216px, 100dvh * 16 / 9);
+  }
+
+  .hero-about {
+    top: calc(var(--gutter) + 40px);
+    right: max(var(--gutter), env(safe-area-inset-right));
+    bottom: auto;
+    left: auto;
+    width: 196px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}
+
+/* With nothing moving there is no distance to scroll through. */
+.hero[data-still] {
+  height: 100vh;
+  height: 100dvh;
+}
+
+/* Also set here so reduced motion is right before any script has run. */
+@media (prefers-reduced-motion: reduce) {
+  .hero {
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+.compare,
+.partner {
+  max-width: calc(1600px + 2 * var(--gutter));
+  margin-inline: auto;
+  padding-right: max(var(--gutter), env(safe-area-inset-right));
+  padding-left: max(var(--gutter), env(safe-area-inset-left));
+}
+
+.compare {
+  padding-top: clamp(56px, 9vw, 128px);
+  padding-bottom: clamp(56px, 7vw, 104px);
+}
+
+.compare-row {
+  display: grid;
+  gap: 28px;
+}
+
+@media (min-width: 820px) {
+  .compare-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+}
+
+.compare-shot {
+  min-width: 0;
+  margin: 0;
+}
+
+/* The outline keeps a light photograph from dissolving into the page. */
+.compare-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  background: #e4e9e6;
+  border-radius: 3px;
+  outline: 1px solid rgb(0 0 0 / 0.1);
+  outline-offset: -1px;
+}
+
+.compare-shot figcaption {
+  margin-top: 10px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.compare-shot a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.compare-shot a:hover {
+  color: var(--ink);
+}
+
+.partner {
+  display: grid;
+  gap: 12px;
+  padding-bottom: clamp(64px, 9vw, 136px);
+  font-size: var(--text);
+  line-height: 1.5;
+}
+
+@media (min-width: 820px) {
+  .partner {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    align-items: baseline;
+  }
+}
+
+/* Focus lands here after the link in the hero, so a keyboard continues from the right place. */
+.partner:focus {
+  outline: none;
+}
+
+.partner h2 {
+  margin: 0;
+  font: inherit;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+.partner p {
+  max-width: 40ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.partner-mail {
+  justify-self: start;
+  text-decoration: underline;
+  text-decoration-color: rgb(18 51 43 / 0.35);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.partner-mail:hover {
+  text-decoration-color: currentColor;
+}
+
+/*
+ * The hero answers to the scroll, so the section under it does too: each piece rises into place as
+ * it enters. Only where the browser can tie it to the scroll, and never under reduced motion, so
+ * everything is simply there otherwise.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    @keyframes rise {
+      from {
+        opacity: 0;
+        translate: 0 20px;
+      }
+    }
+
+    .compare-shot,
+    .partner > * {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+
+    .compare-shot:nth-child(2),
+    .partner > :nth-child(2) {
+      animation-range: entry 5% entry 40%;
+    }
+
+    .compare-shot:nth-child(3),
+    .partner > :nth-child(3) {
+      animation-range: entry 10% entry 45%;
+    }
+  }
+}
