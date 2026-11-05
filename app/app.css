@@ -32,7 +32,7 @@
   --gutter: 20px;
   --gap: 16px;
   --page: 1600px;
-  --section: clamp(64px, 8vw, 120px);
+  --section: clamp(72px, 10vw, 160px);
 }
 
 @media (min-width: 768px) {
@@ -454,6 +454,14 @@ a:focus-visible {
   outline-offset: -1px;
 }
 
+/* G2 corners: a squircle's curvature eases to zero where it meets the straight edges, which a circular fillet cannot do. */
+@supports (corner-shape: squircle) {
+  .walkthrough-media video {
+    border-radius: 6px;
+    corner-shape: squircle;
+  }
+}
+
 .walkthrough-media video:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
@@ -701,9 +709,11 @@ figcaption {
     position: relative;
   }
 
+  /* The column crops this photo tall: keep the people in it rather than the middle of the sign. */
   .research-photo img {
     height: 100%;
     object-fit: cover;
+    object-position: 4% center;
   }
 
   .research-photo figcaption {

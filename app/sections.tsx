@@ -48,7 +48,7 @@ const PARTNERS = [
   },
 ];
 
-const PHOTO_WIDTHS = [640, 960, 1088];
+const PHOTO_WIDTHS = [640, 960, 1240];
 
 export function Research() {
   return (
@@ -57,16 +57,16 @@ export function Research() {
       <div className="columns research">
         <figure className="research-photo">
           <img
-            src="/photos/phantom-960.webp"
-            srcSet={PHOTO_WIDTHS.map((width) => `/photos/phantom-${width}.webp ${width}w`).join(", ")}
+            src="/photos/conference-960.webp"
+            srcSet={PHOTO_WIDTHS.map((width) => `/photos/conference-${width}.webp ${width}w`).join(", ")}
             sizes="(min-width: 1200px) 720px, (min-width: 820px) calc((100vw - 96px) / 2), calc(100vw - 40px)"
-            width={1088}
-            height={816}
-            alt="Gloved hands removing a fibroid from a red PVA hydrogel uterine phantom with an electrosurgical pen."
+            width={1240}
+            height={930}
+            alt="Three people with conference badges standing in a convention center, in front of a large ACS Clinical Congress 2026 sign."
             loading="lazy"
             decoding="async"
           />
-          <figcaption>Fibroid removal on a PVA hydrogel phantom</figcaption>
+          <figcaption>At ACS Clinical Congress 2026</figcaption>
         </figure>
         <div className="research-col">
           <h3>Publications</h3>
