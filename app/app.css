@@ -187,7 +187,7 @@ a:focus-visible {
 .wordmark-art {
   display: block;
   width: auto;
-  height: clamp(22px, 18px + 0.5vw, 28px);
+  height: 46px;
 }
 
 .site-nav {
@@ -498,6 +498,24 @@ figcaption {
   font-size: 15px;
 }
 
+.stack .muted a {
+  position: relative;
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.stack .muted a:hover {
+  color: var(--ink);
+}
+
+/* A 40 px tap target without moving the text. */
+.stack .muted a::after {
+  content: "";
+  position: absolute;
+  inset: -11px 0;
+}
+
 .partner-row.partner-row {
   grid-template-columns: 52px minmax(0, 1fr);
   gap: 16px;
@@ -530,9 +548,9 @@ figcaption {
 }
 
 /*
- * Photo, publications and partners share one top and one bottom. Each list splits its height into
- * equal rows, so the rows line up across the two columns, and the photo crops to fill whatever
- * height the text needs. The caption hangs below, so the row ends on the photo's bottom edge.
+ * Photo, publications and partners share one top and one bottom. Each list stretches its own rows
+ * to fill that height, and the photo crops to fill whatever height the text needs. The caption
+ * hangs below, so the row ends on the photo's bottom edge.
  */
 @media (min-width: 1200px) {
   .research-photo {
@@ -557,7 +575,6 @@ figcaption {
 
   .research-col .stack {
     flex: 1;
-    grid-auto-rows: 1fr;
   }
 }
 

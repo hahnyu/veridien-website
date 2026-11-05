@@ -4,16 +4,29 @@ const PAPERS = [
   {
     title:
       "What does a surgical skill model measure? Quantifying identity confounding and miscalibration on JIGSAWS",
-    venue: "Under review, International Journal of Computer Assisted Radiology and Surgery",
+    status: "Under review",
+    venue: "International Journal of Computer Assisted Radiology and Surgery",
+    url: "https://link.springer.com/journal/11548",
   },
   {
     title: "Decoupling Suture Retention from Stiffness in Hydrogel Surgical Training Phantoms",
-    venue: "Under review, SAGES 2027 Annual Meeting",
+    status: "Under review",
+    venue: "SAGES 2027 Annual Meeting",
+    url: "https://www.sages2027.org/",
   },
   {
     title:
       "Development of a Modular, High-Fidelity Physical Simulator for Laparoscopic Hysterectomy Training",
-    venue: "Presented, Northeast Bioengineering Conference",
+    status: "Presented",
+    venue: "Northeast Bioengineering Conference 2026",
+    url: "https://sites.temple.edu/nebec2026/",
+  },
+  {
+    title:
+      "Reflux-Based Dissolution of Polyvinyl Alcohol for Reproducible Hydrogel Mold Fabrication",
+    status: "Presented",
+    venue: "Conference for Undergraduate Health Research 2026",
+    url: "https://www.uhre.ca/cuhr-2026",
   },
 ];
 
@@ -46,7 +59,7 @@ export function Research() {
           <img
             src="/photos/phantom-960.webp"
             srcSet={PHOTO_WIDTHS.map((width) => `/photos/phantom-${width}.webp ${width}w`).join(", ")}
-            sizes="(min-width: 1680px) 520px, (min-width: 1200px) calc((100vw - 112px) / 3), (min-width: 820px) calc((100vw - 96px) / 2), calc(100vw - 40px)"
+            sizes="(min-width: 1200px) 720px, (min-width: 820px) calc((100vw - 96px) / 2), calc(100vw - 40px)"
             width={1088}
             height={816}
             alt="Gloved hands removing a fibroid from a red PVA hydrogel uterine phantom with an electrosurgical pen."
@@ -61,7 +74,9 @@ export function Research() {
             {PAPERS.map((paper) => (
               <li key={paper.title}>
                 <p>{paper.title}</p>
-                <p className="muted">{paper.venue}</p>
+                <p className="muted">
+                  {paper.status}, <a href={paper.url}>{paper.venue}</a>
+                </p>
               </li>
             ))}
           </ul>
