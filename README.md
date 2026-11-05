@@ -40,7 +40,7 @@ It deploys `build/client`, not the repository root: the root has no `index.html`
 - `app/routes.ts`: the route list
 - `app/routes/`: one file per page
 - `app/app.css`: styles
-- `app/wordmark.tsx`: the logo: the Pine mark in its 32 px cut, beside the name as vector outlines of Schibsted Grotesk Medium (SIL Open Font License 1.1).
+- `app/wordmark.tsx`: the logo: the Pine mark in its 32 px cut, beside the name as vector outlines of Schibsted Grotesk Bold (SIL Open Font License 1.1).
 - `app/scroll-explode.tsx`: the hero, a frame sequence scrubbed by the scroll position
 - `app/site-header.tsx`: the header and its section links
 - `app/compare.tsx`: the three comparison images
@@ -58,7 +58,7 @@ The official logo is the Pine mark beside the name. `app/wordmark.tsx` is the he
 - `brand/veridien-logo-transparent.png`: 2400 px wide, transparent, for video and documents.
 - `brand/veridien-avatar.png` and `brand/veridien-social.png`: for account avatars and link previews.
 
-Colours: mark `#2A3A33`, name `#18181b`, on the page field `#f5f8f6`. The mark stands 1.57 times the name's height, with its centre of mass on the capitals' centre line.
+Colours: mark `#2A3A33`, name `#18181b`, on the page field `#f5f8f6`. The mark stands 1.54 times the name's height, balanced above and below it. In the header the logo is centred in the bar and the capitals on the nav text.
 
 ## Credits
 
