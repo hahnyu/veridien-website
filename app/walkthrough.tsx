@@ -54,7 +54,9 @@ export function Walkthrough() {
     <section className="section walkthrough">
       <div className="walkthrough-text">
         <h2>A Deterministic* AI Walks You Through Each Procedure</h2>
-        <p>It names each step, watches for the result, and moves on when it sees it.</p>
+        <p>
+          Our system divides a procedure into a series of steps, watches to confirm each one, and takes notes during the whole operation. It’s easy to review past runs by looking at annotated replay footage, and track improvements in performance through session metrics.
+        </p>
       </div>
       <figure className="walkthrough-media">
         <video
@@ -90,7 +92,6 @@ export function Walkthrough() {
         )}
       </figure>
       <div className="walkthrough-notes">
-        <p>A guided walkthrough on a hydrogel model. Preview: a vision model run on a recording.</p>
         <p className="walkthrough-footnote">
           *Deterministic: it follows a fixed list of steps and answers fixed questions about what the camera sees. Unlike an LLM, it writes nothing of its own, so it can’t invent a step.
         </p>

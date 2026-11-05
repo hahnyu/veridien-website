@@ -465,7 +465,8 @@ a:focus-visible {
 
 .walkthrough-text p {
   margin-top: 12px;
-  max-width: 44ch;
+  max-width: 52ch;
+  text-wrap: pretty;
 }
 
 .walkthrough-notes {
@@ -477,7 +478,6 @@ a:focus-visible {
 }
 
 .walkthrough-footnote {
-  margin-top: 8px;
   font-size: 13px;
   line-height: 19px;
 }
