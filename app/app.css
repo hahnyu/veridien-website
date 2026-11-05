@@ -430,6 +430,150 @@ a:focus-visible {
 }
 
 /* The outline keeps a light photograph from dissolving into the page. */
+/*
+ * One quiet video, with its words beside it. The video lines up with the page's first two columns, but
+ * stays at least 800 px wide while there is room, the smallest width where every line of its panel reads
+ * on a 1x screen (OCR judge), and never outgrows a short landscape screen. Below 1200 px the words stack
+ * around it. Portrait phones get the taller encode, at full width.
+ */
+.walkthrough-media {
+  position: relative;
+  width: min(100%, 800px, (100dvh - var(--header) - 24px) * 16 / 9);
+  margin-top: clamp(24px, 3vw, 32px);
+}
+
+.walkthrough-media video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #e4e9e6;
+  border-radius: 3px;
+  outline: 1px solid rgb(0 0 0 / 0.1);
+  outline-offset: -1px;
+}
+
+.walkthrough-media video:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.walkthrough-media video::-webkit-media-controls-start-playback-button {
+  display: none;
+}
+
+.walkthrough-text p {
+  margin-top: 12px;
+  max-width: 44ch;
+}
+
+.walkthrough-notes {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 22px;
+  text-wrap: pretty;
+}
+
+.walkthrough-footnote {
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 19px;
+}
+
+/*
+ * Replay, for when the video has ended: a thin white line with no fill. With a mouse it shows only over
+ * the video, and on touch screens, which have no hover, it stays faintly visible. Either way the button
+ * keeps a 40 px target, and tapping the video also replays it.
+ */
+.replay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  color: #fff;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  opacity: 0.6;
+  filter: drop-shadow(0 0 2px rgb(0 0 0 / 0.45));
+  transition: opacity 150ms ease;
+}
+
+@media (hover: hover) {
+  .replay {
+    opacity: 0;
+  }
+
+  .walkthrough-media:hover .replay {
+    opacity: 0.75;
+  }
+
+  .walkthrough-media .replay:hover {
+    opacity: 1;
+  }
+}
+
+.walkthrough-media .replay:focus-visible {
+  opacity: 1;
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+/* From here the words sit beside the video, centred on it as one block, with a title large enough to fill the column. */
+@media (min-width: 1280px) {
+  .section.walkthrough {
+    display: grid;
+    grid-template-columns: max(800px, (100% - 2 * var(--gap)) / 3 * 2 + var(--gap)) minmax(0, 1fr);
+    grid-template-rows: 1fr auto auto 1fr;
+    column-gap: 28px;
+  }
+
+  .walkthrough-media {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    width: 100%;
+    margin-top: 0;
+    align-self: start;
+  }
+
+  .walkthrough-text {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .walkthrough-text h2 {
+    font-size: clamp(34px, 3vw, 56px);
+    line-height: 1.1;
+    text-wrap: pretty;
+  }
+
+  .walkthrough-text p {
+    margin-top: 14px;
+  }
+
+  .walkthrough-notes {
+    grid-column: 2;
+    grid-row: 3;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 559px) and (orientation: portrait) {
+  .walkthrough-media {
+    width: 100%;
+  }
+
+  .walkthrough-media video {
+    aspect-ratio: 4 / 5;
+  }
+}
+
 .compare-shot img,
 .research-photo img {
   display: block;

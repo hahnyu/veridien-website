@@ -56,7 +56,7 @@ const insideUrl = (set: FrameSet) => `/renders/scroll_explode/${set}/inside.webp
 const LENS_SIZE = 0.13;
 const LENS_FADE_END = 0.05;
 
-function wantsStill(): boolean {
+export function wantsStill(): boolean {
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   return Boolean(connection?.saveData) || matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

@@ -3,6 +3,7 @@ import { glideTo } from "../glide";
 import { ScrollExplode } from "../scroll-explode";
 import { Partner, People, Research } from "../sections";
 import { SiteHeader } from "../site-header";
+import { Walkthrough } from "../walkthrough";
 import type { Route } from "./+types/home";
 
 const DESCRIPTION =
@@ -28,7 +29,7 @@ export default function Home() {
       <main>
         <ScrollExplode alt="The Veridien dome simulator on its base, with two graspers and a laparoscope through its ports.">
           <div className="hero-copy">
-            <h1>Every patient’s anatomy is unique. Surgical training should be too.</h1>
+            <h1>Every patient is unique. Surgical training should be too.</h1>
             <p className="hero-lede">
               Veridien is building an AI-enabled laparoscopic trainer that works with our custom
               hydrogel tissue models.
@@ -40,6 +41,7 @@ export default function Home() {
             </div>
           </div>
         </ScrollExplode>
+        <Walkthrough />
         <Compare />
         <Research />
         <People />
