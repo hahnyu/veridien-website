@@ -30,10 +30,6 @@ export default function Home() {
         <ScrollExplode alt="The Veridien dome simulator on its base, with two graspers and a laparoscope through its ports.">
           <div className="hero-copy">
             <h1>Every patient is unique. Surgical training should be too.</h1>
-            <p className="hero-lede">
-              Veridien is building an AI-enabled laparoscopic trainer that works with our custom
-              hydrogel tissue models.
-            </p>
             <div className="hero-actions">
               <a className="button" href="#partner" onClick={glideTo}>
                 Partner with us
@@ -41,6 +37,12 @@ export default function Home() {
             </div>
           </div>
         </ScrollExplode>
+        <section className="section statement">
+          <p>
+            Veridien is building an AI-enabled laparoscopic trainer that works with our custom
+            hydrogel tissue models.
+          </p>
+        </section>
         <Walkthrough />
         <Compare />
         <Research />

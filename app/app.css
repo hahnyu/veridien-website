@@ -18,11 +18,20 @@
 :root {
   /* The render frames are delivered on this colour, so they have no visible border on the page. */
   --field: #f5f8f6;
-  --ink: #12332b;
-  --ink-soft: #4c6058;
-  --green: #2f6b58;
-  --on-ink-soft: #b9cdc4;
-  --rule: rgb(18 51 43 / 0.14);
+  --ink: #0f2e14;
+  --g2-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M.000 1.000 .001 .778 .002 .687 .005 .617 .010 .558 .015 .507 .022 .461 .030 .420 .039 .381 .049 .346 .061 .313 .074 .283 .088 .255 .104 .228 .121 .204 .139 .181 .159 .159 .181 .139 .204 .121 .228 .104 .255 .088 .283 .074 .313 .061 .346 .049 .381 .039 .420 .030 .461 .022 .507 .015 .558 .010 .617 .005 .687 .002 .778 .001 1.000 .000L1 1Z'/%3E%3C/svg%3E");
+  --g2-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1.000 1.000 .999 .778 .998 .687 .995 .617 .990 .558 .985 .507 .978 .461 .970 .420 .961 .381 .951 .346 .939 .313 .926 .283 .912 .255 .896 .228 .879 .204 .861 .181 .841 .159 .819 .139 .796 .121 .772 .104 .745 .088 .717 .074 .687 .061 .654 .049 .619 .039 .580 .030 .539 .022 .493 .015 .442 .010 .383 .005 .313 .002 .222 .001 .000 .000L0 1Z'/%3E%3C/svg%3E");
+  --g2-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M.000 .000 .001 .222 .002 .313 .005 .383 .010 .442 .015 .493 .022 .539 .030 .580 .039 .619 .049 .654 .061 .687 .074 .717 .088 .745 .104 .772 .121 .796 .139 .819 .159 .841 .181 .861 .204 .879 .228 .896 .255 .912 .283 .926 .313 .939 .346 .951 .381 .961 .420 .970 .461 .978 .507 .985 .558 .990 .617 .995 .687 .998 .778 .999 1.000 1.000L1 0Z'/%3E%3C/svg%3E");
+  --g2-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1' preserveAspectRatio='none'%3E%3Cpath d='M1.000 .000 .999 .222 .998 .313 .995 .383 .990 .442 .985 .493 .978 .539 .970 .580 .961 .619 .951 .654 .939 .687 .926 .717 .912 .745 .896 .772 .879 .796 .861 .819 .841 .841 .819 .861 .796 .879 .772 .896 .745 .912 .717 .926 .687 .939 .654 .951 .619 .961 .580 .970 .539 .978 .493 .985 .442 .990 .383 .995 .313 .998 .222 .999 .000 1.000L0 0Z'/%3E%3C/svg%3E");
+  --ring-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' preserveAspectRatio='none'%3E%3Cpath d='M0 11 .012 8.187 .047 7.026 .106 6.141 .189 5.404 .296 4.763 .427 4.195 .583 3.684 .763 3.222 .97 2.801 1.202 2.417 1.462 2.068 1.75 1.75 2.068 1.462 2.417 1.202 2.801 .97 3.222 .763 3.684 .583 4.195 .427 4.763 .296 5.404 .189 6.141 .106 7.026 .047 8.187 .012 11 0 11 1 8.443 1.011 7.387 1.043 6.583 1.097 5.913 1.172 5.33 1.269 4.814 1.388 4.35 1.53 3.929 1.694 3.546 1.882 3.198 2.093 2.88 2.329 2.591 2.591 2.329 2.88 2.093 3.198 1.882 3.546 1.694 3.929 1.53 4.35 1.388 4.814 1.269 5.33 1.172 5.913 1.097 6.583 1.043 7.387 1.011 8.443 1 11Z'/%3E%3C/svg%3E");
+  --ring-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' preserveAspectRatio='none'%3E%3Cpath d='M11 11 10.988 8.187 10.953 7.026 10.894 6.141 10.811 5.404 10.704 4.763 10.573 4.195 10.417 3.684 10.237 3.222 10.03 2.801 9.798 2.417 9.538 2.068 9.25 1.75 8.932 1.462 8.583 1.202 8.199 .97 7.778 .763 7.316 .583 6.805 .427 6.237 .296 5.596 .189 4.859 .106 3.974 .047 2.813 .012 0 0 0 1 2.557 1.011 3.613 1.043 4.417 1.097 5.087 1.172 5.67 1.269 6.186 1.388 6.65 1.53 7.071 1.694 7.454 1.882 7.802 2.093 8.12 2.329 8.409 2.591 8.671 2.88 8.907 3.198 9.118 3.546 9.306 3.929 9.47 4.35 9.612 4.814 9.731 5.33 9.828 5.913 9.903 6.583 9.957 7.387 9.989 8.443 10 11Z'/%3E%3C/svg%3E");
+  --ring-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' preserveAspectRatio='none'%3E%3Cpath d='M0 0 .012 2.813 .047 3.974 .106 4.859 .189 5.596 .296 6.237 .427 6.805 .583 7.316 .763 7.778 .97 8.199 1.202 8.583 1.462 8.932 1.75 9.25 2.068 9.538 2.417 9.798 2.801 10.03 3.222 10.237 3.684 10.417 4.195 10.573 4.763 10.704 5.404 10.811 6.141 10.894 7.026 10.953 8.187 10.988 11 11 11 10 8.443 9.989 7.387 9.957 6.583 9.903 5.913 9.828 5.33 9.731 4.814 9.612 4.35 9.47 3.929 9.306 3.546 9.118 3.198 8.907 2.88 8.671 2.591 8.409 2.329 8.12 2.093 7.802 1.882 7.454 1.694 7.071 1.53 6.65 1.388 6.186 1.269 5.67 1.172 5.087 1.097 4.417 1.043 3.613 1.011 2.557 1 0Z'/%3E%3C/svg%3E");
+  --ring-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 11 11' preserveAspectRatio='none'%3E%3Cpath d='M11 0 10.988 2.813 10.953 3.974 10.894 4.859 10.811 5.596 10.704 6.237 10.573 6.805 10.417 7.316 10.237 7.778 10.03 8.199 9.798 8.583 9.538 8.932 9.25 9.25 8.932 9.538 8.583 9.798 8.199 10.03 7.778 10.237 7.316 10.417 6.805 10.573 6.237 10.704 5.596 10.811 4.859 10.894 3.974 10.953 2.813 10.988 0 11 0 10 2.557 9.989 3.613 9.957 4.417 9.903 5.087 9.828 5.67 9.731 6.186 9.612 6.65 9.47 7.071 9.306 7.454 9.118 7.802 8.907 8.12 8.671 8.409 8.409 8.671 8.12 8.907 7.802 9.118 7.454 9.306 7.071 9.47 6.65 9.612 6.186 9.731 5.67 9.828 5.087 9.903 4.417 9.957 3.613 9.989 2.557 10 0Z'/%3E%3C/svg%3E");
+  --band: #094618;
+  --ink-soft: #515f52;
+  --green: #166a2a;
+  --on-ink-soft: #c4dcc5;
+  --rule: rgb(15 46 20 / 0.14);
 
   --text: clamp(16px, 15px + 0.15vw, 18px);
   --h1: clamp(2.25rem, 1.2rem + 3.1vw, 4.25rem);
@@ -110,7 +119,6 @@ section:focus {
 }
 
 a:focus-visible {
-  border-radius: 2px;
   outline: 2px solid var(--green);
   outline-offset: 3px;
 }
@@ -136,27 +144,27 @@ a:focus-visible {
   color: inherit;
   font-weight: 500;
   text-decoration: underline;
-  text-decoration-color: rgb(18 51 43 / 0.35);
+  text-decoration-color: rgb(15 46 20 / 0.35);
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   transition: color 150ms ease, text-decoration-color 150ms ease;
 }
 
 .button {
+  position: relative;
   display: inline-flex;
   align-items: center;
   height: 46px;
-  padding: 0 22px;
-  color: var(--field);
+  padding: 0 21px;
+  color: var(--band);
   font-weight: 500;
   text-decoration: none;
-  background: var(--ink);
-  border-radius: 6px;
-  transition: background-color 150ms ease, scale 150ms ease;
+  border: 1px solid currentColor;
+  transition: color 150ms ease, scale 150ms ease;
 }
 
 .button:hover {
-  background: var(--green);
+  color: var(--green);
 }
 
 .button:active {
@@ -282,10 +290,6 @@ a:focus-visible {
   gap: clamp(16px, 2.4vh, 28px);
 }
 
-.hero-lede {
-  max-width: 34em;
-}
-
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
@@ -327,14 +331,10 @@ a:focus-visible {
   }
 }
 
-/* A phone on its side. The header already has the partner link, so the sentence stays and the button goes. */
+/* A phone on its side. */
 @media (min-aspect-ratio: 1/1) and (max-height: 500px) {
   .hero-copy h1 {
     font-size: clamp(1.5rem, 7vh, 2.25rem);
-  }
-
-  .hero-actions {
-    display: none;
   }
 }
 
@@ -366,14 +366,10 @@ a:focus-visible {
   }
 }
 
-/* A small phone: as on its side, the sentence stays and the button goes, or the copy runs into the device. */
+/* A small phone. */
 @media (max-aspect-ratio: 1/1) and (max-height: 700px) {
   .hero-copy h1 {
     font-size: 1.75rem;
-  }
-
-  .hero-actions {
-    display: none;
   }
 }
 
@@ -436,6 +432,16 @@ a:focus-visible {
  * on a 1x screen (OCR judge), and never outgrows a short landscape screen. Below 1200 px the words stack
  * around it. Portrait phones get the taller encode, at full width.
  */
+/* One line on its own, in the white space under the hero. */
+.statement p {
+  max-width: 26em;
+  color: var(--ink);
+  font-size: var(--h2);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 .walkthrough-media {
   position: relative;
   width: min(100%, 800px, (100dvh - var(--header) - 24px) * 16 / 9);
@@ -448,18 +454,9 @@ a:focus-visible {
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  background: #e4e9e6;
-  border-radius: 3px;
+  background: #e0e7e0;
   outline: 1px solid rgb(0 0 0 / 0.1);
   outline-offset: -1px;
-}
-
-/* G2 corners: a squircle's curvature eases to zero where it meets the straight edges, which a circular fillet cannot do. */
-@supports (corner-shape: squircle) {
-  .walkthrough-media video {
-    border-radius: 6px;
-    corner-shape: squircle;
-  }
 }
 
 .walkthrough-media video:focus-visible {
@@ -588,8 +585,7 @@ a:focus-visible {
   width: 100%;
   height: auto;
   aspect-ratio: 4 / 3;
-  background: #e4e9e6;
-  border-radius: 3px;
+  background: #e0e7e0;
   outline: 1px solid rgb(0 0 0 / 0.1);
   outline-offset: -1px;
 }
@@ -743,7 +739,6 @@ figcaption {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 3px;
   outline: 1px solid rgb(0 0 0 / 0.1);
   outline-offset: -1px;
 }
@@ -756,13 +751,13 @@ figcaption {
 /* The one dark band: where the page asks for something. */
 .partner {
   color: var(--field);
-  background: var(--ink);
+  background: var(--band);
 }
 
 .partner-grid {
   max-width: calc(var(--page) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: clamp(56px, 7vw, 96px) max(var(--gutter), env(safe-area-inset-right)) 28px max(var(--gutter), env(safe-area-inset-left));
+  padding: clamp(32px, 3.6vw, 52px) max(var(--gutter), env(safe-area-inset-right)) 28px max(var(--gutter), env(safe-area-inset-left));
   gap: 16px var(--gap);
 }
 
@@ -792,7 +787,79 @@ figcaption {
 
 .partner-foot {
   grid-column: 1 / -1;
-  margin-top: clamp(40px, 5vw, 72px);
+  margin-top: clamp(16px, 2vw, 28px);
   color: var(--on-ink-soft);
   font-size: 14px;
+}
+
+/*
+ * Every rounded corner on the site is G2. The curve is |x|^4 + |y|^4 = 1, whose curvature falls to zero
+ * where it meets a straight edge, which a circular fillet cannot do. Chromium draws it with corner-shape.
+ * Other browsers get the same curve as a mask, so no plain border-radius is left anywhere.
+ */
+.walkthrough-media video,
+.compare-shot img,
+.research-photo img,
+.person img {
+  --g2: 6px;
+}
+
+.button {
+  --g2: 11px;
+}
+
+@supports (corner-shape: squircle) {
+  .walkthrough-media video,
+  .compare-shot img,
+  .research-photo img,
+  .person img,
+  .button {
+    border-radius: var(--g2);
+    corner-shape: squircle;
+  }
+
+  a:not(.button):focus-visible {
+    border-radius: 4px;
+    corner-shape: squircle;
+  }
+}
+
+@supports not (corner-shape: squircle) {
+  .walkthrough-media video,
+  .compare-shot img,
+  .research-photo img,
+  .person img {
+    --g2-mask: var(--g2-tl) 0 0 / var(--g2) var(--g2) no-repeat, var(--g2-tr) 100% 0 / var(--g2) var(--g2) no-repeat,
+      var(--g2-bl) 0 100% / var(--g2) var(--g2) no-repeat, var(--g2-br) 100% 100% / var(--g2) var(--g2) no-repeat,
+      linear-gradient(#000 0 0) center / calc(100% - 2 * var(--g2) + 1px) 100% no-repeat,
+      linear-gradient(#000 0 0) center / 100% calc(100% - 2 * var(--g2) + 1px) no-repeat;
+    -webkit-mask: var(--g2-mask);
+    mask: var(--g2-mask);
+  }
+
+  /* A mask would clip a ring drawn outside the element, so the ring moves inside. */
+  .walkthrough-media video:focus-visible {
+    outline-offset: -3px;
+  }
+
+  /* The button's thin border, drawn as the same curve. A real border cannot follow it in these browsers. */
+  .button {
+    border-color: transparent;
+  }
+
+  .button::before {
+    --ring: var(--ring-tl) 0 0 / 11px 11px no-repeat, var(--ring-tr) 100% 0 / 11px 11px no-repeat,
+      var(--ring-bl) 0 100% / 11px 11px no-repeat, var(--ring-br) 100% 100% / 11px 11px no-repeat,
+      linear-gradient(#000 0 0) center top / calc(100% - 21px) 1px no-repeat,
+      linear-gradient(#000 0 0) center bottom / calc(100% - 21px) 1px no-repeat,
+      linear-gradient(#000 0 0) left center / 1px calc(100% - 21px) no-repeat,
+      linear-gradient(#000 0 0) right center / 1px calc(100% - 21px) no-repeat;
+    position: absolute;
+    inset: -1px;
+    content: "";
+    background: currentColor;
+    pointer-events: none;
+    -webkit-mask: var(--ring);
+    mask: var(--ring);
+  }
 }
