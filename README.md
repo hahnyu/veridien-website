@@ -58,7 +58,7 @@ The official logo is the Pine mark beside the name. `app/wordmark.tsx` is the he
 - `brand/veridien-logo-transparent.png`: 2400 px wide, transparent, for video and documents.
 - `brand/veridien-avatar.png` and `brand/veridien-social.png`: for account avatars and link previews.
 
-Colours: mark `#094618`, name `#18181b`, on the page field `#f5f8f6`. The mark stands 1.54 times the name's height, balanced above and below it. In the header the logo is centred in the bar and the capitals on the nav text.
+Colours: mark and name both `#18181b`, no green, on the page field `#f5f8f6`. The mark stands 1.54 times the name's height, balanced above and below it. In the header the logo is centred in the bar and the capitals on the nav text.
 
 ## Credits
 
