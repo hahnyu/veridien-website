@@ -11,6 +11,9 @@ export function SiteHeader() {
         <a className="site-nav-section" href="#platform" onClick={glideTo}>
           Platform
         </a>
+        <a className="site-nav-section" href="#roadmap" onClick={glideTo}>
+          Roadmap
+        </a>
         <a className="site-nav-section" href="#research" onClick={glideTo}>
           Research
         </a>

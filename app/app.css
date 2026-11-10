@@ -793,6 +793,211 @@ figcaption {
 }
 
 /*
+ * Roadmap: a line of milestones, each over a live model. Wide screens pin the section and slide the
+ * line sideways with the scroll (roadmap.tsx sets the height); without that it's a row that scrolls
+ * by itself. Phones stack the cards down a vertical line.
+ */
+.roadmap {
+  --inset: max(var(--gutter), env(safe-area-inset-left), calc((100% - var(--page)) / 2));
+  --card: min(400px, 27vw, (100dvh - 380px) * 4 / 3);
+  --card-gap: clamp(24px, 3vw, 48px);
+  padding-bottom: var(--section);
+}
+
+.roadmap-head {
+  padding-inline: var(--inset);
+}
+
+.roadmap-head p {
+  margin-top: 8px;
+}
+
+.roadmap-viewport {
+  margin-top: clamp(28px, 3.5vw, 48px);
+  padding: 0 var(--inset) 16px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.roadmap-track {
+  display: flex;
+  gap: var(--card-gap);
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.milestone {
+  position: relative;
+  flex: none;
+  width: var(--card);
+}
+
+.milestone-date {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.milestone-now {
+  color: var(--green);
+  font-weight: 500;
+}
+
+/* The dot sits on the line; the line runs from this dot to the next card's. */
+.milestone-dot {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 11px;
+  height: 11px;
+  margin: 10px 0 18px;
+  background: var(--field);
+  border: 1.5px solid var(--ink-soft);
+  border-radius: 50%;
+}
+
+.milestone[data-now] .milestone-dot {
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 0 0 5px rgb(22 106 42 / 0.14);
+}
+
+.milestone::before {
+  content: "";
+  position: absolute;
+  top: 37px; /* the dot's centre: date line, its margin, half the dot */
+  left: 5px;
+  width: calc(100% + var(--card-gap));
+  height: 1px;
+  background: var(--rule);
+}
+
+.milestone:last-child::before {
+  width: 100%;
+  background: linear-gradient(to right, var(--rule), transparent);
+}
+
+/* Today sits partway to the next milestone. */
+.milestone[data-now]::before {
+  background: linear-gradient(to right, var(--green) 45%, var(--rule) 45%);
+}
+
+.milestone-tile {
+  aspect-ratio: 4 / 3;
+  background: #e9efeb;
+  outline: 1px solid rgb(0 0 0 / 0.06);
+  outline-offset: -1px;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.milestone-tile:active {
+  cursor: grabbing;
+}
+
+.milestone-tile canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* With no 3D (data saver, or it failed to load), the cards are the words and the line. */
+.roadmap[data-flat] .milestone-tile {
+  display: none;
+}
+
+.milestone h3 {
+  margin-top: 14px;
+}
+
+.milestone h3 + p {
+  margin-top: 4px;
+  max-width: 40ch;
+}
+
+/* Pinned, the section's own height is the scroll distance, so its spacing moves outside it. */
+.roadmap[data-pinned] {
+  margin-bottom: var(--section);
+  padding-bottom: 0;
+}
+
+.roadmap[data-pinned] .roadmap-stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+  padding-top: var(--header);
+  overflow: hidden;
+}
+
+.roadmap[data-pinned] .roadmap-viewport {
+  overflow: visible;
+}
+
+.roadmap[data-pinned] .roadmap-track {
+  will-change: translate;
+}
+
+/* Phones: one column, the line running down the left. */
+@media (max-width: 819px) {
+  .roadmap-viewport {
+    overflow: visible;
+  }
+
+  .roadmap-track {
+    flex-direction: column;
+    gap: 44px;
+    width: auto;
+  }
+
+  .milestone {
+    width: auto;
+    padding-left: 30px;
+  }
+
+  .milestone-dot {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    margin: 0;
+  }
+
+  .milestone-date {
+    margin-bottom: 12px;
+  }
+
+  .milestone::before,
+  .milestone:last-child::before,
+  .milestone[data-now]::before {
+    top: 11px;
+    left: 5px;
+    width: 1px;
+    height: calc(100% + 44px);
+  }
+
+  .milestone::before {
+    background: var(--rule);
+  }
+
+  .milestone:last-child::before {
+    height: 100%;
+    background: linear-gradient(to bottom, var(--rule), transparent);
+  }
+
+  .milestone[data-now]::before {
+    background: linear-gradient(to bottom, var(--green) 45%, var(--rule) 45%);
+  }
+}
+
+/*
  * Every rounded corner on the site is G2. The curve is |x|^4 + |y|^4 = 1, whose curvature falls to zero
  * where it meets a straight edge, which a circular fillet cannot do. Chromium draws it with corner-shape.
  * Other browsers get the same curve as a mask, so no plain border-radius is left anywhere.
@@ -800,7 +1005,8 @@ figcaption {
 .walkthrough-media video,
 .compare-shot img,
 .research-photo img,
-.person img {
+.person img,
+.milestone-tile {
   --g2: 6px;
 }
 
@@ -813,6 +1019,7 @@ figcaption {
   .compare-shot img,
   .research-photo img,
   .person img,
+  .milestone-tile,
   .button {
     border-radius: var(--g2);
     corner-shape: squircle;
@@ -828,7 +1035,8 @@ figcaption {
   .walkthrough-media video,
   .compare-shot img,
   .research-photo img,
-  .person img {
+  .person img,
+  .milestone-tile {
     --g2-mask: var(--g2-tl) 0 0 / var(--g2) var(--g2) no-repeat, var(--g2-tr) 100% 0 / var(--g2) var(--g2) no-repeat,
       var(--g2-bl) 0 100% / var(--g2) var(--g2) no-repeat, var(--g2-br) 100% 100% / var(--g2) var(--g2) no-repeat,
       linear-gradient(#000 0 0) center / calc(100% - 2 * var(--g2) + 1px) 100% no-repeat,

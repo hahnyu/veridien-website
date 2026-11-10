@@ -1,6 +1,7 @@
 import { Compare } from "../compare";
 import { glideTo } from "../glide";
 import { ScrollExplode } from "../scroll-explode";
+import { Roadmap } from "../roadmap";
 import { Partner, People, Research } from "../sections";
 import { SiteHeader } from "../site-header";
 import { Walkthrough } from "../walkthrough";
@@ -45,6 +46,7 @@ export default function Home() {
         </section>
         <Walkthrough />
         <Compare />
+        <Roadmap />
         <Research />
         <People />
         <Partner />
